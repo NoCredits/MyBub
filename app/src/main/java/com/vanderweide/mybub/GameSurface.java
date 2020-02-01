@@ -161,7 +161,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         this.chibiList.add(chibi2);
 
         this.getWidth();
-        for (int i=0;i<0;i++){
+        for (int i=0;i<10;i++){
             //this.bolList.add(new Bol(Color.RED,25,randInt(0,500),randInt(0,500)));
             Hexagon hex=new Hexagon(this,30,randInt(25,this.getWidth()-25),randInt(25,this.getHeight()-25),Color.BLUE);
             hex.setMovingVector(randInt(-10,10),randInt(-10,10));
@@ -174,14 +174,10 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
             bol.setColor(Color.rgb(randInt(0,255),randInt(0,255),randInt(0,255)));
             bol.setRadius(randInt(5,50));
             bol.setVelocity(rand.nextFloat());
-            this.bolList.add(bol);
-            this.hexList.add(hex);
+            this.gameList.add(hex);
+            this.gameList.add(bol);
         }
 
-        Hexagon hex=new Hexagon(this,30,randInt(25,this.getWidth()-25),randInt(25,this.getHeight()-25),Color.BLUE);
-
-
-        gameList.add(hex);
 
 
         this.gameThread = new GameThread(this,holder);

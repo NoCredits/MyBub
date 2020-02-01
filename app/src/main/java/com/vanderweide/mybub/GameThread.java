@@ -1,6 +1,7 @@
 package com.vanderweide.mybub;
 
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 public class GameThread extends Thread {
@@ -41,10 +42,10 @@ public class GameThread extends Thread {
             // Interval to redraw game
             // (Change nanoseconds to milliseconds)
             long waitTime = (now - startTime)/1000000;
-            if(waitTime < 10)  {
-                waitTime= 10; // Millisecond.
+            if(waitTime < 15)  {
+                waitTime= 15; // Millisecond.
             }
-            System.out.print(" Wait Time="+ waitTime);
+           // Log.i(" Wait Time=", String.valueOf(waitTime));
 
             try {
                 // Sleep.
