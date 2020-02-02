@@ -5,26 +5,37 @@ import android.graphics.Paint;
 
 public abstract class GameObject {
 
-    protected int x;
-    protected int y;
-    protected int color;
-    protected Paint paint;
-    protected int radius;
+    int x;
+    int y;
+    int color;
+    Paint paint;
+    int radius;
 
-    protected float velocity;
-    protected int movingVectorX;
-    protected int movingVectorY;
-    protected long lastDrawNanoTime;
-    protected GameSurface gameSurface;
+    float velocity;
+    int movingVectorX;
+    int movingVectorY;
+    long lastDrawNanoTime;
+    GameSurface gameSurface;
+    int layer;
+    int z_index;
 
-    public GameObject(){
+    boolean inGrid;
+    int gridPosX;
+    int gridPosY;
+
+
+    private GameObject(){
         this.velocity = 0.5f;
         this.movingVectorX = 10;
         this.movingVectorY = 5;
         this.lastDrawNanoTime = -1;
+        this.layer=0;
+        this.z_index=0;
+        this.inGrid=false;
     }
 
-    public GameObject(GameSurface gameSurface,int color, int radius, int x, int y)  {
+
+    GameObject(GameSurface gameSurface,int color, int radius, int x, int y)  {
         this();
         this.gameSurface=gameSurface;
         this.radius=radius;
@@ -34,23 +45,25 @@ public abstract class GameObject {
         this.paint=new Paint();
         this.paint.setStyle(Paint.Style.FILL);
     }
-    public void setMovingVector(int movingVectorX, int movingVectorY)  {
+
+
+    void setMovingVector(int movingVectorX, int movingVectorY)  {
         this.movingVectorX= movingVectorX;
         this.movingVectorY = movingVectorY;
     }
 
 
-    public int getX()  {
+    int getX()  {
         return this.x;
     }
 
-    public int getY()  {
+    int getY()  {
         return this.y;
     }
 
-    public int getRadius() {return this.radius;}
+    int getRadius() {return this.radius;}
 
-    public int getColor() {return this.color;}
+    int getColor() {return this.color;}
 
     public void setX(int x)  {
         this.x=x;
@@ -62,9 +75,9 @@ public abstract class GameObject {
 
     public void setRadius(int radius) {this.radius=radius;}
 
-    public void setColor(int color) {this.color=color;}
+    void setColor(int color) {this.color=color;}
 
-    public Paint getPaint() {  return this.paint;  }
+    Paint getPaint() {  return this.paint;  }
 
     public void setPaint(Paint paint) {    this.paint = paint;    }
 
@@ -73,7 +86,7 @@ public abstract class GameObject {
         return velocity;
     }
 
-    public void setVelocity(float velocity) {
+    void setVelocity(float velocity) {
         this.velocity = velocity;
     }
 
@@ -109,11 +122,70 @@ public abstract class GameObject {
         this.gameSurface = gameSurface;
     }
 
+    public int getLayer() {
+        return layer;
+    }
+
+    public void setLayer(int layer) {
+        this.layer = layer;
+    }
+
+    int getZ_index() {
+        return z_index;
+    }
+
+    void setZ_index(int z_index) {
+        this.z_index = z_index;
+    }
+    public boolean isInGrid() {
+        return inGrid;
+    }
+
+    void setInGrid(boolean inGrid) {
+        this.inGrid = inGrid;
+    }
+
+    public int getGridPosX() {
+        return gridPosX;
+    }
+
+    void setGridPosX(int gridPosX) {
+        this.gridPosX = gridPosX;
+    }
+
+    public int getGridPosY() {
+        return gridPosY;
+    }
+
+    void setGridPosY(int gridPosY) {
+        this.gridPosY = gridPosY;
+    }
+
+
+
     public void draw(Canvas canvas){
 
     }
 
     public void update(){
+
+    }
+
+    public void addTogrid(GridObject grid, int row, int col){
+        if (!this.inGrid){
+            grid.add(row,col,this);
+        } else grid.remove(row,col);
+    }
+
+    public void removeFromgrid(GridObject grid){
+        if (this.inGrid){
+            grid.remove(this.gridPosX,this.gridPosY);
+        }
+    }
+    public void calculateGridPosToScreen(int padding){
+        this.x= this.x % 2==0 ? this.gridPosX*(this.radius+padding):this.gridPosX*((this.radius/2)+padding);
+        //this.x=this.gridPosX*(this.radius*padding);
+        this.y=this.gridPosY*(this.radius+padding);
 
     }
 

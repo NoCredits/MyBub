@@ -10,6 +10,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -20,9 +22,13 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
     private final List<ChibiCharacter> chibiList = new ArrayList<ChibiCharacter>();
     private final List<Explosion> explosionList = new ArrayList<Explosion>();
-    private final List<Bol> bolList = new ArrayList<Bol>();
-    private final List<Hexagon> hexList = new ArrayList<Hexagon>();
     private final List<GameObject> gameList = new ArrayList<GameObject>();
+    private final List<Integer> zList = new ArrayList<Integer>();
+    private final int gridRows=11;
+    private final int gridCols=11;
+    private final GridObject grid=new GridObject(gridRows,gridRows);
+
+
     private static Random rand;
 
 
@@ -44,17 +50,11 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
             explosion.update();
         }
 
-        for (Bol bol:bolList) {
-            bol.update();
-        }
-
-        for (Hexagon hex:hexList) {
-            hex.update();
-        }
-
         for (GameObject game:gameList) {
+            //if (!zList.contains(game.getZ_index()))
             game.update();
         }
+
 
         Iterator<Explosion> iterator= this.explosionList.iterator();
         while(iterator.hasNext())  {
@@ -133,14 +133,6 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
             explosion.draw(canvas);
         }
 
-        for (Bol bol:bolList) {
-            bol.draw(canvas);
-        }
-
-        for (Hexagon hex:hexList) {
-            hex.draw(canvas);
-        }
-
         for (GameObject game:gameList) {
             game.draw(canvas);
         }
@@ -161,21 +153,83 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         this.chibiList.add(chibi2);
 
         this.getWidth();
-        for (int i=0;i<10;i++){
+        /*
+        for (int i=0;i<20;i++){
             //this.bolList.add(new Bol(Color.RED,25,randInt(0,500),randInt(0,500)));
             Hexagon hex=new Hexagon(this,30,randInt(25,this.getWidth()-25),randInt(25,this.getHeight()-25),Color.BLUE);
             hex.setMovingVector(randInt(-10,10),randInt(-10,10));
-            hex.setColor(Color.rgb(randInt(0,255),randInt(0,255),randInt(0,255)));
+//            hex.setColor(Color.rgb(randInt(0,255),randInt(0,255),randInt(0,255)));
             hex.setRadius(randInt(5,50));
             hex.setVelocity(rand.nextFloat());
+            hex.setZ_index(randInt(0,4));
+            switch (hex.getZ_index()){
+                case 0: hex.setColor(Color.GREEN);
+                    break;
+                case 1: hex.setColor(Color.RED);
+                break;
+                case 2: hex.setColor(Color.BLUE);
+                    break;
+                case 3: hex.setColor(Color.WHITE);
+                    break;
+                case 4: hex.setColor(Color.YELLOW);
+                    break;
+            }
 
             Bol bol=new Bol(this,Color.RED,25,randInt(25,this.getWidth()-25),randInt(25,this.getHeight()-25));
             bol.setMovingVector(randInt(-10,10),randInt(-10,10));
-            bol.setColor(Color.rgb(randInt(0,255),randInt(0,255),randInt(0,255)));
+//            bol.setColor(Color.rgb(randInt(0,255),randInt(0,255),randInt(0,255)));
             bol.setRadius(randInt(5,50));
             bol.setVelocity(rand.nextFloat());
+            bol.setZ_index(randInt(0,4));
+            switch (bol.getZ_index()){
+                case 0: bol.setColor(Color.GREEN);
+                    break;
+                case 1: bol.setColor(Color.RED);
+                    break;
+                case 2: bol.setColor(Color.BLUE);
+                    break;
+                case 3: bol.setColor(Color.WHITE);
+                    break;
+                case 4: bol.setColor(Color.YELLOW);
+                    break;
+            }
             this.gameList.add(hex);
-            this.gameList.add(bol);
+            this.gameList.add(bol);+
+        }
+        */
+
+
+        for (int r=0;r<gridRows;r++){
+            for (int c=0;c<gridCols;c++) {
+
+                Hexagon hex=new Hexagon(this,30,randInt(25,this.getWidth()-25),randInt(25,this.getHeight()-25),Color.BLUE);
+                //hex.setMovingVector(randInt(-10,10),randInt(-10,10));
+                hex.setMovingVector(0,0);
+//            hex.setColor(Color.rgb(randInt(0,255),randInt(0,255),randInt(0,255)));
+
+
+                hex.setRadius((this.getWidth()/(gridCols+1)/2));
+                hex.setVelocity(0);
+                hex.setZ_index(randInt(0,4));
+                switch (hex.getZ_index()){
+                    case 0: hex.setColor(Color.GREEN);
+                        break;
+                    case 1: hex.setColor(Color.RED);
+                        break;
+                    case 2: hex.setColor(Color.BLUE);
+                        break;
+                    case 3: hex.setColor(Color.WHITE);
+                        break;
+                    case 4: hex.setColor(Color.YELLOW);
+                        break;
+                }
+               if (randInt(0,2)>0){
+                   gameList.add(hex);
+                   grid.add(r,c,hex);
+                   hex.calculateGridPosToScreen(grid.getPadding());
+
+               }
+            }
         }
 
 

@@ -96,11 +96,14 @@ public  class Hexagon extends GameObject {
 
         // draw
         canvas.drawPath(polyPath, paint);
+        //canvas.drawCircle(getX(),getY(), getRadius(), paint);
+
         this.lastDrawNanoTime= System.nanoTime();
 
     }
 
     public void update()  {
+
         // Current time in nanoseconds
         long now = System.nanoTime();
 
@@ -110,36 +113,75 @@ public  class Hexagon extends GameObject {
         // Change nanoseconds to milliseconds (1 nanosecond = 1000000 milliseconds).
         int deltaTime = (int) ((now - lastDrawNanoTime)/ 1000000 );
 
-        // Distance moves
-        float distance = velocity * deltaTime;
+        if (this.velocity>0){
+            // Distance moves
+            float distance = velocity * deltaTime;
 
-        double movingVectorLength = Math.sqrt(movingVectorX* movingVectorX + movingVectorY*movingVectorY);
+            double movingVectorLength = Math.sqrt(movingVectorX* movingVectorX + movingVectorY*movingVectorY);
 
-        // Calculate the new position of the game character.
-        this.x = x +  (int)(distance* movingVectorX / movingVectorLength);
-        this.y = y +  (int)(distance* movingVectorY / movingVectorLength);
+            // Calculate the new position of the game character.
+            this.x = x +  (int)(distance* movingVectorX / movingVectorLength);
+            this.y = y +  (int)(distance* movingVectorY / movingVectorLength);
 
-        // When the game's character touches the edge of the screen, then change direction
+            // When the game's character touches the edge of the screen, then change direction
 
-        if(this.x < this.getRadius() )  {
-            this.x = this.getRadius();
-            this.movingVectorX = - this.movingVectorX;
-        } else if(this.x > this.gameSurface.getWidth() -this.getRadius())  {
-            this.x= this.gameSurface.getWidth()-this.getRadius();
-            this.movingVectorX = - this.movingVectorX;
-        }
+            if(this.x < this.getRadius() )  {
+                this.x = this.getRadius();
+                this.movingVectorX = - this.movingVectorX;
+            } else if(this.x > this.gameSurface.getWidth() -this.getRadius())  {
+                this.x= this.gameSurface.getWidth()-this.getRadius();
+                this.movingVectorX = - this.movingVectorX;
+            }
 
-        if(this.y < this.getRadius() )  {
-            this.y = this.getRadius();
-            this.movingVectorY = - this.movingVectorY;
-        } else if(this.y > this.gameSurface.getHeight()- this.getRadius())  {
-            this.y= this.gameSurface.getHeight()- this.getRadius();
-            this.movingVectorY = - this.movingVectorY ;
+            if(this.y < this.getRadius() )  {
+                this.y = this.getRadius();
+                this.movingVectorY = - this.movingVectorY;
+            } else if(this.y > this.gameSurface.getHeight()- this.getRadius())  {
+                this.y= this.gameSurface.getHeight()- this.getRadius();
+                this.movingVectorY = - this.movingVectorY ;
+            }
+
         }
 
         setRotation(getRotation()+1);
+        //setRotation(20);
         this.center=new Point(this.x,this.y);
         updatePoints();
     }
+
+    public void ocalculateGridPosToScreen(int padding){
+        //int r=(this.gridPosY - this.radius/2) * 3;
+        this.x=(this.gridPosX+1)*(this.radius*2+padding)-this.radius;
+        this.y=this.gridPosY>0
+                ?(this.gridPosY+1)*(this.radius*2+padding)-this.radius
+                :(this.gridPosY+1)*(this.radius*2+padding)-this.radius;
+        if ((this.gridPosY % 2)!= 0){
+            this.x+=(radius)+padding;
+        }
+
+        //this.x= this.y % 2==0 ? this.gridPosX*(this.radius*2+padding)+(this.radius/2):this.gridPosX*((this.radius*2)+padding)+(this.radius/2);
+        //this.x= this.gridPosX*50+25;
+        //this.y=this.gridPosY*50+25;
+
+        setCenter(this.x,this.y);
+        updatePoints();
+    }
+
+    public void calculateGridPosToScreen(int padding){
+        //int r=(this.gridPosY - this.radius/2) * 3;
+        this.x=(this.gridPosX+1)*(this.radius*2+padding)-this.radius;
+        this.y=(this.gridPosY+1)*(this.radius*2+padding-this.radius/4)-this.radius;
+        if ((this.gridPosY % 2)!= 0){
+            this.x+=(radius)+padding;
+        }
+
+        //this.x= this.y % 2==0 ? this.gridPosX*(this.radius*2+padding)+(this.radius/2):this.gridPosX*((this.radius*2)+padding)+(this.radius/2);
+        //this.x= this.gridPosX*50+25;
+        //this.y=this.gridPosY*50+25;
+
+        setCenter(this.x,this.y);
+        updatePoints();
+    }
+
 
 }
