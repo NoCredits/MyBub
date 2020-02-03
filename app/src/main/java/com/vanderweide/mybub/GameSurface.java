@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -12,6 +13,7 @@ import android.view.SurfaceView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -20,13 +22,18 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
     private GameThread gameThread;
 
-    private final List<ChibiCharacter> chibiList = new ArrayList<ChibiCharacter>();
-    private final List<Explosion> explosionList = new ArrayList<Explosion>();
-    private final List<GameObject> gameList = new ArrayList<GameObject>();
-    private final List<Integer> zList = new ArrayList<Integer>();
-    private final int gridRows=11;
-    private final int gridCols=11;
-    private final GridObject grid=new GridObject(gridRows,gridRows);
+    private List<ChibiCharacter> chibiList = new ArrayList<ChibiCharacter>();
+    private List<Explosion> explosionList = new ArrayList<Explosion>();
+    private List<GameObject> gameList = new ArrayList<GameObject>();
+    private List<GameObject> zList = new ArrayList<GameObject>();
+    private List<GameObject> layerList = new ArrayList<GameObject>();
+
+    private SparseArray <ArrayList<GameObject>> layerArray= new SparseArray<>();
+//    private final HashMap<Integer, ArrayList<Integer>> layerMap = new HashMap<Integer, ArrayList<Integer>>();
+
+    private int gridRows=11;
+    private int gridCols=11;
+    private GridObject grid=new GridObject(gridRows,gridRows);
 
 
     private static Random rand;
@@ -124,19 +131,23 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
     public void draw(Canvas canvas)  {
         super.draw(canvas);
 
-
         for(ChibiCharacter chibi: chibiList)  {
             chibi.draw(canvas);
         }
+
+
 
         for(Explosion explosion: this.explosionList)  {
             explosion.draw(canvas);
         }
 
-        for (GameObject game:gameList) {
-            game.draw(canvas);
-        }
+//        for(GameObject obj: this.gameList)  {
+//
+//            obj.draw(canvas);
+//        }
 
+
+        Utils.drawLayers(canvas,layerArray);
     }
 
     // Implements method of SurfaceHolder.Callback
@@ -149,67 +160,21 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
         Bitmap chibiBitmap2 = BitmapFactory.decodeResource(this.getResources(),R.drawable.chibi2);
         ChibiCharacter chibi2 = new ChibiCharacter(this,chibiBitmap2,300,150);
-        this.chibiList.add(chibi1);
+       this.chibiList.add(chibi1);
         this.chibiList.add(chibi2);
-
-        this.getWidth();
-        /*
-        for (int i=0;i<20;i++){
-            //this.bolList.add(new Bol(Color.RED,25,randInt(0,500),randInt(0,500)));
-            Hexagon hex=new Hexagon(this,30,randInt(25,this.getWidth()-25),randInt(25,this.getHeight()-25),Color.BLUE);
-            hex.setMovingVector(randInt(-10,10),randInt(-10,10));
-//            hex.setColor(Color.rgb(randInt(0,255),randInt(0,255),randInt(0,255)));
-            hex.setRadius(randInt(5,50));
-            hex.setVelocity(rand.nextFloat());
-            hex.setZ_index(randInt(0,4));
-            switch (hex.getZ_index()){
-                case 0: hex.setColor(Color.GREEN);
-                    break;
-                case 1: hex.setColor(Color.RED);
-                break;
-                case 2: hex.setColor(Color.BLUE);
-                    break;
-                case 3: hex.setColor(Color.WHITE);
-                    break;
-                case 4: hex.setColor(Color.YELLOW);
-                    break;
-            }
-
-            Bol bol=new Bol(this,Color.RED,25,randInt(25,this.getWidth()-25),randInt(25,this.getHeight()-25));
-            bol.setMovingVector(randInt(-10,10),randInt(-10,10));
-//            bol.setColor(Color.rgb(randInt(0,255),randInt(0,255),randInt(0,255)));
-            bol.setRadius(randInt(5,50));
-            bol.setVelocity(rand.nextFloat());
-            bol.setZ_index(randInt(0,4));
-            switch (bol.getZ_index()){
-                case 0: bol.setColor(Color.GREEN);
-                    break;
-                case 1: bol.setColor(Color.RED);
-                    break;
-                case 2: bol.setColor(Color.BLUE);
-                    break;
-                case 3: bol.setColor(Color.WHITE);
-                    break;
-                case 4: bol.setColor(Color.YELLOW);
-                    break;
-            }
-            this.gameList.add(hex);
-            this.gameList.add(bol);+
-        }
-        */
-
 
         for (int r=0;r<gridRows;r++){
             for (int c=0;c<gridCols;c++) {
 
                 Hexagon hex=new Hexagon(this,30,randInt(25,this.getWidth()-25),randInt(25,this.getHeight()-25),Color.BLUE);
-                //hex.setMovingVector(randInt(-10,10),randInt(-10,10));
-                hex.setMovingVector(0,0);
+                hex.setMovingVector(randInt(-10,10),randInt(-10,10));
+                //hex.setMovingVector(0,0);
 //            hex.setColor(Color.rgb(randInt(0,255),randInt(0,255),randInt(0,255)));
 
 
                 hex.setRadius((this.getWidth()/(gridCols+1)/2));
-                hex.setVelocity(0);
+                hex.setRadius(randInt(30,70));
+                hex.setVelocity(rand.nextFloat()/3);
                 hex.setZ_index(randInt(0,4));
                 switch (hex.getZ_index()){
                     case 0: hex.setColor(Color.GREEN);
@@ -223,9 +188,13 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
                     case 4: hex.setColor(Color.YELLOW);
                         break;
                 }
-               if (randInt(0,2)>0){
-                   gameList.add(hex);
+                int ran=randInt(0,3);
+               if (ran>0){
+
                    grid.add(r,c,hex);
+                   gameList.add(hex);
+                   layerArray=Utils.addToArray(layerArray,hex.getZ_index(),hex);
+
                    hex.calculateGridPosToScreen(grid.getPadding());
 
                }
