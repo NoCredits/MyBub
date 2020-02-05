@@ -95,8 +95,8 @@ public  class Hexagon extends GameObject {
         polyPath.lineTo(points[0].x, points[0].y);
 
         // draw
-        canvas.drawPath(polyPath, paint);
-        //canvas.drawCircle(getX(),getY(), getRadius(), paint);
+        //canvas.drawPath(polyPath, paint);
+        if (rendered) canvas.drawCircle(getX(),getY(), getRadius(), paint);
 
         this.lastDrawNanoTime= System.nanoTime();
 
@@ -143,7 +143,7 @@ public  class Hexagon extends GameObject {
 
         }
 
-        setRotation(getRotation()+1);
+        //setRotation(getRotation()+1);
         //setRotation(20);
         this.center=new Point(this.x,this.y);
         updatePoints();

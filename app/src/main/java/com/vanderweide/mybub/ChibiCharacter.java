@@ -3,7 +3,7 @@ package com.vanderweide.mybub;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-public class ChibiCharacter extends GameOldObject {
+public class ChibiCharacter extends GameObject {
 
     private static final int ROW_TOP_TO_BOTTOM = 0;
     private static final int ROW_RIGHT_TO_LEFT = 1;
@@ -21,19 +21,19 @@ public class ChibiCharacter extends GameOldObject {
     private Bitmap[] bottomToTops;
 
     // Velocity of game character (pixel/millisecond)
-    public static final float VELOCITY = 0.3f;
+//    public static final float VELOCITY = 0.3f;
 
-    private int movingVectorX = 10;
-    private int movingVectorY = 5;
+//    private int movingVectorX = 10;
+ //   private int movingVectorY = 5;
 
-    private long lastDrawNanoTime =-1;
+//    private long lastDrawNanoTime =-1;
 
-    private GameSurface gameSurface;
+//    private GameSurface gameSurface;
 
     public ChibiCharacter(GameSurface gameSurface, Bitmap image, int x, int y) {
-        super(image, 4, 3, x, y);
+        super(gameSurface,image, 4, 3, x, y);
 
-        this.gameSurface= gameSurface;
+        //this.gameSurface= gameSurface;
 
         this.topToBottoms = new Bitmap[colCount]; // 3
         this.rightToLefts = new Bitmap[colCount]; // 3
@@ -85,7 +85,7 @@ public class ChibiCharacter extends GameOldObject {
         int deltaTime = (int) ((now - lastDrawNanoTime)/ 1000000 );
 
         // Distance moves
-        float distance = VELOCITY * deltaTime;
+        float distance = velocity * deltaTime;
 
         double movingVectorLength = Math.sqrt(movingVectorX* movingVectorX + movingVectorY*movingVectorY);
 
@@ -133,13 +133,10 @@ public class ChibiCharacter extends GameOldObject {
 
     public void draw(Canvas canvas)  {
         Bitmap bitmap = this.getCurrentMoveBitmap();
-        canvas.drawBitmap(bitmap,x, y, null);
+        if (rendered) canvas.drawBitmap(bitmap,x, y, null);
         // Last draw time.
         this.lastDrawNanoTime= System.nanoTime();
     }
 
-    public void setMovingVector(int movingVectorX, int movingVectorY)  {
-        this.movingVectorX= movingVectorX;
-        this.movingVectorY = movingVectorY;
-    }
+
 }

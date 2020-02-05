@@ -47,6 +47,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         for (GameObject game:gameList) {
             //if (!zList.contains(game.getZ_index()))
             game.update();
+
         }
 
 
@@ -108,6 +109,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
 
         Utils.drawLayers(canvas,gameList);
+
     }
 
     // Implements method of SurfaceHolder.Callback
@@ -126,13 +128,11 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
                 Hexagon hex=new Hexagon(this,30,Utils.randInt(25,this.getWidth()-25),Utils.randInt(25,this.getHeight()-25),Color.BLUE);
                 hex.setMovingVector(Utils.randInt(-10,10),Utils.randInt(-10,10));
-                //hex.setMovingVector(0,0);
-//            hex.setColor(Color.rgb(randInt(0,255),randInt(0,255),randInt(0,255)));
-
+               //hex.setMovingVector(0,0);
+                hex.setVelocity(Utils.rand.nextFloat()/3);
 
                 hex.setRadius((this.getWidth()/(gridCols+1)/2));
-                hex.setRadius(Utils.randInt(30,70));
-                hex.setVelocity(Utils.rand.nextFloat()/3);
+                //hex.setRadius(Utils.randInt(30,70));
                 hex.setZ_index(2);
                 hex.setLayer(Utils.randInt(0,5));
                 switch (hex.getLayer()){
@@ -150,30 +150,26 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
                         break;
                 }
                 int ran=Utils.randInt(0,3);
-               if (ran>0){
+                    if (ran>2){
+                        grid.add(r,c,hex);
+                        gameList.add(hex);
+                    }
 
-                   grid.add(r,c,hex);
-                   gameList.add(hex);
-
-
-
-                   hex.calculateGridPosToScreen(grid.getPadding());
-
-               }
+                   //hex.calculateGridPosToScreen(grid.getPadding());
             }
         }
 
-        chibi1.setVelocity(Utils.rand.nextFloat()/3);
+        chibi1.setVelocity(0.5f);
         chibi1.setMovingVector(Utils.randInt(-10,10),Utils.randInt(-10,10));
         chibi1.setLayer(3);
         chibi1.setZ_index(3);
-        gameList.add(chibi1);
+       // gameList.add(chibi1);
 
-        chibi2.setVelocity(Utils.rand.nextFloat()/3);
+        chibi2.setVelocity(Utils.rand.nextFloat());
         chibi2.setMovingVector(Utils.randInt(-10,10),Utils.randInt(-10,10));
         chibi2.setLayer(3);
         chibi2.setZ_index(3);
-        gameList.add(chibi2);
+        //gameList.add(chibi2);
 
 
         this.gameThread = new GameThread(this,holder);

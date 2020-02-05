@@ -1,5 +1,6 @@
 package com.vanderweide.mybub;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
@@ -18,20 +19,37 @@ public abstract class GameObject {
     GameSurface gameSurface;
     int layer;
     int z_index;
+    boolean rendered;
+    boolean touchable;
+    boolean collidable;
 
     boolean inGrid;
     int gridPosX;
     int gridPosY;
 
 
+    Bitmap image;
+    int rowCount;
+    int colCount;
+
+    int WIDTH;
+    int HEIGHT;
+
+    int width;
+    int height;
+
+
     private GameObject(){
-        this.velocity = 0.5f;
-        this.movingVectorX = 10;
-        this.movingVectorY = 5;
+        this.velocity = 0f;
+        this.movingVectorX = 0;
+        this.movingVectorY = 0;
         this.lastDrawNanoTime = -1;
         this.layer=0;
         this.z_index=0;
         this.inGrid=false;
+        this.rendered=true;
+        this.touchable=false;
+        this.collidable=false;
     }
 
 
@@ -46,10 +64,42 @@ public abstract class GameObject {
         this.paint.setStyle(Paint.Style.FILL);
     }
 
+    public GameObject(GameSurface gameSurface,Bitmap image, int rowCount, int colCount, int x, int y)  {
+
+        this();
+        this.gameSurface=gameSurface;
+        this.image = image;
+        this.rowCount= rowCount;
+        this.colCount= colCount;
+
+        this.x= x;
+        this.y= y;
+
+        this.WIDTH = image.getWidth();
+        this.HEIGHT = image.getHeight();
+
+        this.width = this.WIDTH/ colCount;
+        this.height= this.HEIGHT/ rowCount;
+    }
+
+    Bitmap createSubImageAt(int row, int col)  {
+        // createBitmap(bitmap, x, y, width, height).
+        Bitmap subImage = Bitmap.createBitmap(image, col* width, row* height ,width,height);
+        return subImage;
+    }
+
 
     void setMovingVector(int movingVectorX, int movingVectorY)  {
         this.movingVectorX= movingVectorX;
         this.movingVectorY = movingVectorY;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
     }
 
 
@@ -161,7 +211,29 @@ public abstract class GameObject {
         this.gridPosY = gridPosY;
     }
 
+    public boolean isRendered() {
+        return rendered;
+    }
 
+    public void setRendered(boolean rendered) {
+        this.rendered = rendered;
+    }
+
+    public boolean isTouchable() {
+        return touchable;
+    }
+
+    public void setTouchable(boolean touchable) {
+        this.touchable = touchable;
+    }
+
+    public boolean isCollidable() {
+        return collidable;
+    }
+
+    public void setCollidable(boolean collidable) {
+        this.collidable = collidable;
+    }
 
     public void draw(Canvas canvas){
 
@@ -170,6 +242,8 @@ public abstract class GameObject {
     public void update(){
 
     }
+
+
 
     public void addTogrid(GridObject grid, int row, int col){
         if (!this.inGrid){
