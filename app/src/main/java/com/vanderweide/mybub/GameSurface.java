@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -24,7 +25,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
     private int gridRows=11;
     private int gridCols=11;
     private GridObject grid=new GridObject(gridRows,gridRows);
-
+    private GameObject ammo;
 
 
 
@@ -40,15 +41,30 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
     public void update()  {
 
-        for(Explosion explosion: this.explosionList)  {
-            explosion.update();
-        }
-
         for (GameObject game:gameList) {
             //if (!zList.contains(game.getZ_index()))
             game.update();
 
         }
+        GameObject foe=Utils.collide(ammo,gameList);
+        if (foe!=null){ //collision with foe
+            ammo.setVelocity(0);
+            ammo.calculateScreenPosToGrid(0);
+            ammo.calculateGridPosToScreen(0);
+
+
+            Hexagon hex=new Hexagon(this,(this.getWidth()/(gridCols+1)/2),this.getWidth()/2,this.getHeight()-50,Color.BLUE);
+            hex.setLayer(Utils.randInt(0,5));
+            hex.setColor(Utils.hexColor(hex.getLayer()));
+            hex.setLayer(1);
+            gameList.add(hex);
+            ammo=hex;
+        };
+
+        for(Explosion explosion: this.explosionList)  {
+            explosion.update();
+        }
+
 
 
         Iterator<Explosion> iterator= this.explosionList.iterator();
@@ -70,22 +86,18 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
             int x=  (int)event.getX();
             int y = (int)event.getY();
 
-            Iterator<ChibiCharacter> iterator= this.chibiList.iterator();
-
-            while(iterator.hasNext()) {
-                ChibiCharacter chibi = iterator.next();
-                if( chibi.getX() < x && x < chibi.getX() + chibi.getWidth()
-                        && chibi.getY() < y && y < chibi.getY()+ chibi.getHeight())  {
+                if( ammo.getX()-ammo.getRadius() < x && x < ammo.getX() + ammo.getRadius()
+                        && ammo.getY()-ammo.getRadius() < y && y < ammo.getY()+ ammo.getRadius())  {
                     // Remove the current element from the iterator and the list.
-                    iterator.remove();
 
                     // Create Explosion object.
-                    Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(),R.drawable.explosion);
-                    Explosion explosion = new Explosion(this, bitmap,chibi.getX(),chibi.getY());
+                    //Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(),R.drawable.explosion);
+                    //Explosion explosion = new Explosion(this, bitmap,chibi.getX(),chibi.getY());
 
-                    this.explosionList.add(explosion);
+                    //this.explosionList.add(explosion);
+
                 }
-            }
+
 
 
             for(ChibiCharacter chibi: chibiList) {
@@ -93,6 +105,14 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
                 int movingVectorY =y-  chibi.getY() ;
                 chibi.setMovingVector(movingVectorX, movingVectorY);
             }
+
+            ammo.setVelocity(0.8f);
+            Log.d("x y klikX klikY ",String.valueOf(ammo.getX())+" "+String.valueOf(ammo.getY())+" "+String.valueOf(x)+" "+String.valueOf(y));
+            //ammo.setMovingVectorX(x<ammo.getX()?ammo.getX()-x:ammo.getX()+x);
+            //ammo.setMovingVectorY(y<ammo.getY()?ammo.getY()-y:ammo.getY()+y);
+            ammo.setMovingVectorX(x<ammo.getX()?x-ammo.getX():x-ammo.getX());
+            ammo.setMovingVectorY(y<ammo.getY()?y-ammo.getY():y+ammo.getY());
+
             return true;
         }
         return false;
@@ -127,37 +147,31 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
             for (int c=0;c<gridCols;c++) {
 
                 Hexagon hex=new Hexagon(this,30,Utils.randInt(25,this.getWidth()-25),Utils.randInt(25,this.getHeight()-25),Color.BLUE);
-                hex.setMovingVector(Utils.randInt(-10,10),Utils.randInt(-10,10));
-               //hex.setMovingVector(0,0);
-                hex.setVelocity(Utils.rand.nextFloat()/3);
-
+               // hex.setMovingVector(Utils.randInt(-10,10),Utils.randInt(-10,10));
+               hex.setMovingVector(0,0);
+                //hex.setVelocity(Utils.rand.nextFloat()/3);
                 hex.setRadius((this.getWidth()/(gridCols+1)/2));
                 //hex.setRadius(Utils.randInt(30,70));
                 hex.setZ_index(2);
                 hex.setLayer(Utils.randInt(0,5));
-                switch (hex.getLayer()){
-                    case 0: hex.setColor(Color.GREEN);
-                        break;
-                    case 1: hex.setColor(Color.RED);
-                        break;
-                    case 2: hex.setColor(Color.BLUE);
-                        break;
-                    case 3: hex.setColor(Color.WHITE);
-                        break;
-                    case 4: hex.setColor(Color.YELLOW);
-                        break;
-                    case 5: hex.setColor(Color.MAGENTA);
-                        break;
-                }
+                hex.setColor(Utils.hexColor(hex.getLayer()));
+                hex.setLayer(1);
                 int ran=Utils.randInt(0,3);
                     if (ran>2){
                         grid.add(r,c,hex);
                         gameList.add(hex);
                     }
-
-                   //hex.calculateGridPosToScreen(grid.getPadding());
+                   hex.calculateGridPosToScreen(grid.getPadding());
             }
         }
+
+        //create shooter
+        Hexagon hex=new Hexagon(this,(this.getWidth()/(gridCols+1)/2),this.getWidth()/2,this.getHeight()-50,Color.BLUE);
+        hex.setLayer(Utils.randInt(0,5));
+        hex.setColor(Utils.hexColor(hex.getLayer()));
+        hex.setLayer(1);
+        gameList.add(hex);
+        ammo=hex;
 
         chibi1.setVelocity(0.5f);
         chibi1.setMovingVector(Utils.randInt(-10,10),Utils.randInt(-10,10));
