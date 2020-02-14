@@ -49,17 +49,17 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         GameObject foe=Utils.collide(ammo,gameList);
         if (foe!=null){ //collision with foe
             ammo.setVelocity(0);
-            ammo.calculateScreenPosToGrid(0);
+            ammo.shooter=false;
+           // ammo.calculateScreenPosToGrid(0);
             ammo.calculateGridPosToScreen(0);
-
-
-            Hexagon hex=new Hexagon(this,(this.getWidth()/(gridCols+1)/2),this.getWidth()/2,this.getHeight()-50,Color.BLUE);
+            Hexagon hex=new Hexagon(this,15.6f,320/2,(int)(480),Color.BLUE);
             hex.setLayer(Utils.randInt(0,5));
             hex.setColor(Utils.hexColor(hex.getLayer()));
             hex.setLayer(1);
+            hex.shooter=true;
             gameList.add(hex);
             ammo=hex;
-        };
+        }
 
         for(Explosion explosion: this.explosionList)  {
             explosion.update();
@@ -83,33 +83,16 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
-            int x=  (int)event.getX();
-            int y = (int)event.getY();
+            int x=  (int)(event.getX() /ammo.scaleX);
+            int y = (int)(event.getY() /ammo.scaleY);
 
-                if( ammo.getX()-ammo.getRadius() < x && x < ammo.getX() + ammo.getRadius()
-                        && ammo.getY()-ammo.getRadius() < y && y < ammo.getY()+ ammo.getRadius())  {
-                    // Remove the current element from the iterator and the list.
+//                if( ammo.getX()-ammo.getRadius() < x && x < ammo.getX() + ammo.getRadius()
+//                        && ammo.getY()-ammo.getRadius() < y && y < ammo.getY()+ ammo.getRadius())  {
+//
+//                }
 
-                    // Create Explosion object.
-                    //Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(),R.drawable.explosion);
-                    //Explosion explosion = new Explosion(this, bitmap,chibi.getX(),chibi.getY());
-
-                    //this.explosionList.add(explosion);
-
-                }
-
-
-
-            for(ChibiCharacter chibi: chibiList) {
-                int movingVectorX =x-  chibi.getX() ;
-                int movingVectorY =y-  chibi.getY() ;
-                chibi.setMovingVector(movingVectorX, movingVectorY);
-            }
-
-            ammo.setVelocity(0.8f);
+            ammo.setVelocity(0.3f);
             Log.d("x y klikX klikY ",String.valueOf(ammo.getX())+" "+String.valueOf(ammo.getY())+" "+String.valueOf(x)+" "+String.valueOf(y));
-            //ammo.setMovingVectorX(x<ammo.getX()?ammo.getX()-x:ammo.getX()+x);
-            //ammo.setMovingVectorY(y<ammo.getY()?ammo.getY()-y:ammo.getY()+y);
             ammo.setMovingVectorX(x<ammo.getX()?x-ammo.getX():x-ammo.getX());
             ammo.setMovingVectorY(y<ammo.getY()?y-ammo.getY():y+ammo.getY());
 
@@ -126,7 +109,6 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         for(Explosion explosion: this.explosionList)  {
             explosion.draw(canvas);
         }
-
 
         Utils.drawLayers(canvas,gameList);
 
@@ -146,11 +128,14 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         for (int r=0;r<gridRows;r++){
             for (int c=0;c<gridCols;c++) {
 
-                Hexagon hex=new Hexagon(this,30,Utils.randInt(25,this.getWidth()-25),Utils.randInt(25,this.getHeight()-25),Color.BLUE);
+               // Hexagon hex=new Hexagon(this,30,Utils.randInt(25,this.getWidth()-25),Utils.randInt(25,this.getHeight()-25),Color.BLUE);
+                Hexagon hex=new Hexagon(this,30,Utils.randInt(25,320-25),Utils.randInt(25,480-25),Color.BLUE);
                // hex.setMovingVector(Utils.randInt(-10,10),Utils.randInt(-10,10));
                hex.setMovingVector(0,0);
                 //hex.setVelocity(Utils.rand.nextFloat()/3);
-                hex.setRadius((this.getWidth()/(gridCols+1)/2));
+                //hex.setRadius((this.getWidth()/(gridCols+1)/2));
+                //hex.setRadius(((320-10)/(gridCols-1)/2));
+                hex.setRadius(15.6f);
                 //hex.setRadius(Utils.randInt(30,70));
                 hex.setZ_index(2);
                 hex.setLayer(Utils.randInt(0,5));
@@ -161,12 +146,15 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
                         grid.add(r,c,hex);
                         gameList.add(hex);
                     }
-                   hex.calculateGridPosToScreen(grid.getPadding());
+                  // hex.calculateGridPosToScreen(grid.getPadding());
+                hex.calculateGridPosToScreen(0);
             }
         }
 
         //create shooter
-        Hexagon hex=new Hexagon(this,(this.getWidth()/(gridCols+1)/2),this.getWidth()/2,this.getHeight()-50,Color.BLUE);
+       // Hexagon hex=new Hexagon(this,(this.getWidth()/(gridCols+1)/2),this.getWidth()/2,this.getHeight()-50,Color.BLUE);
+       // Hexagon hex=new Hexagon(this,15.6f,320/2,480-50,Color.BLUE);
+        Hexagon hex=new Hexagon(this,15.6f,320,480,Color.BLUE);
         hex.setLayer(Utils.randInt(0,5));
         hex.setColor(Utils.hexColor(hex.getLayer()));
         hex.setLayer(1);

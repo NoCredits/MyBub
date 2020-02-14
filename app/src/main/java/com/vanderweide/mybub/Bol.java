@@ -23,7 +23,7 @@ public class Bol extends GameObject {
 
     }
 
-
+/*
     public void update()  {
         // Current time in nanoseconds
         long now = System.nanoTime();
@@ -62,6 +62,6 @@ public class Bol extends GameObject {
         }
 
     }
-
+*/
 
 }

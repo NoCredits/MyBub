@@ -76,15 +76,5 @@ public class GridObject {
         }
     }
 
-    public void calculateAllPosToScreen(){
-        for (int r=0; r<this.rows;r++){
-            for (int c=0; c<this.cols;c++){
-                if(this.pos[r][c]!=null){
-                    this.pos[r][c].calculateGridPosToScreen(this.padding);;
-                }
-            }
-        }
-    }
-
 
 }
