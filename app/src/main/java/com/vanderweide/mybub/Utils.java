@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class Utils {
 
-    public static float offsetY=15.6f;
+    public static float offsetY=0f;
 
     public static Random rand=new Random();
 
@@ -67,62 +67,12 @@ public class Utils {
         }
     }
 
-
-    public static void calcPos(GameObject hero,GameObject foe) {
-
-        if (hero.getX() > foe.getX()) {//rechts
-            if (hero.getY() > foe.getY() + foe.getRadius() / 2) { //onder
-                hero.gridPosX = foe.gridPosX + 1;
-                hero.gridPosY = foe.gridPosY + 1;
-                if (hero.gridPosY%2!=0) hero.gridPosX--;
-            } else if (hero.getY() < foe.getY() - foe.getRadius() / 2) { //boven
-                hero.gridPosX = foe.gridPosX + 1;
-                hero.gridPosY = foe.gridPosY - 1;
-                if (hero.gridPosY%2!=0) hero.gridPosX--;
-            } else { //midden
-                hero.gridPosX = foe.gridPosX + 1;
-                hero.gridPosY = foe.gridPosY;
-            }
-        } else {  //links
-            if (hero.getY() > foe.getY() + foe.getRadius() / 2) { //onder
-                hero.gridPosX = foe.gridPosX - 1;
-                hero.gridPosY = foe.gridPosY + 1;
-                if (hero.gridPosY%2==0) hero.gridPosX++;
-            } else if (hero.getY() < foe.getY() - foe.getRadius() / 2) { //boven
-                hero.gridPosX = foe.gridPosX - 1;
-                hero.gridPosY = foe.gridPosY - 1;
-                if (hero.gridPosY%2==0) hero.gridPosX++;
-            } else { //midden
-                hero.gridPosX = foe.gridPosX - 1;
-                hero.gridPosY = foe.gridPosY;
-            }
+    public static void setOffSetY(List<GameObject> gameObjectList){
+        int lowest=0; //laagste bal (hoogste Y)
+        for (GameObject game: gameObjectList) {
+            if (game.getGridPosY()>lowest) lowest=game.getGridPosY();
+            if (lowest>11) offsetY=(float) (((lowest-11)+1)*(game.radius*2-game.radius/4)-game.radius);
         }
-    }
-
-
-    public static GameObject collide(GameObject hero, List<GameObject> gameObjectList){
-        GameObject collidedFoe=null;
-
-                for (GameObject foe:getLayerlist(hero.getLayer(),gameObjectList)){
-                    if (hero!=foe && hero.isRendered() && foe.isRendered()) {
-                        //  Log.i("collide hero layer",String.valueOf(hero.getLayer()));
-                        // Log.i("collide",String.valueOf(Math.abs(hero.getX()-foe.getX())-foe.getRadius()));
-//                        if (hero.x + hero.radius + foe.radius > foe.x
-                        //                               && hero.x < foe.x + hero.radius + foe.radius
-                        //                              && hero.y + hero.radius + foe.radius > foe.y
-                        //                             && hero.y < foe.y + hero.radius + foe.radius)
-                        //                    {
-                        double distance = Math.sqrt(
-                                ((hero.x - foe.x) * (hero.x - foe.x))
-                                        + ((hero.y - foe.y) * (hero.y - foe.y)));
-                        if (distance < hero.radius + foe.radius) {
-                            collidedFoe = foe;
-                            calcPos(hero,foe);
-                           return collidedFoe; //balls have collided
-                        }
-                    }
-                }
-        return collidedFoe;
     }
 
     public static int randInt(int min, int max) {

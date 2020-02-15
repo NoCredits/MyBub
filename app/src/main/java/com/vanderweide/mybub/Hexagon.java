@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 
+import java.util.List;
+
 public  class Hexagon extends GameObject {
 
     private static final long serialVersionUID = 1L;
@@ -78,6 +80,59 @@ public  class Hexagon extends GameObject {
         }
     }
 
+    public void calcPos(GameObject foe) {
+
+        if (this.getX() > foe.getX()) {//rechts
+            if (this.getY() > foe.getY() -Utils.offsetY + foe.getRadius() / 2) { //onder
+                this.gridPosX = foe.gridPosX + 1;
+                this.gridPosY = foe.gridPosY + 1;
+                if (this.gridPosY%2!=0) this.gridPosX--;
+            } else if (this.getY() < foe.getY() -Utils.offsetY - foe.getRadius() / 2) { //boven
+                this.gridPosX = foe.gridPosX + 1;
+                this.gridPosY = foe.gridPosY - 1;
+                if (this.gridPosY%2!=0) this.gridPosX--;
+            } else { //midden
+                this.gridPosX = foe.gridPosX + 1;
+                this.gridPosY = foe.gridPosY;
+            }
+        } else {  //links
+            if (this.getY() > foe.getY() -Utils.offsetY+ foe.getRadius() / 2) { //onder
+                this.gridPosX = foe.gridPosX - 1;
+                this.gridPosY = foe.gridPosY + 1;
+                if (this.gridPosY%2==0) this.gridPosX++;
+            } else if (this.getY() < foe.getY() -Utils.offsetY- foe.getRadius() / 2) { //boven
+                this.gridPosX = foe.gridPosX - 1;
+                this.gridPosY = foe.gridPosY - 1;
+                if (this.gridPosY%2==0) this.gridPosX++;
+            } else { //midden
+                this.gridPosX = foe.gridPosX - 1;
+                this.gridPosY = foe.gridPosY;
+            }
+        }
+    }
+
+
+    public GameObject collide(List<GameObject> gameObjectList){
+        GameObject collidedFoe=null;
+
+        for (GameObject foe:Utils.getLayerlist(this.getLayer(),gameObjectList)){
+            if (this!=foe && this.isRendered() && foe.isRendered()) {
+//                double distance = Math.sqrt(
+//                        ((this.x - foe.x) * (this.x - foe.x))
+//                                + ((this.y - foe.y) * (this.y - foe.y)));
+                double distance = Math.sqrt(
+                        ((this.x - foe.x) * (this.x - foe.x))
+                                + ((this.y - foe.y +Utils.offsetY) * (this.y - foe.y+Utils.offsetY)));
+                if (distance < this.radius + foe.radius) {
+                    collidedFoe = foe;
+                    calcPos(foe);
+                    return collidedFoe; //balls have collided
+                }
+            }
+        }
+        return collidedFoe;
+    }
+
     public void draw(Canvas canvas){
         // Store before changing.
         Paint paint=new Paint();
@@ -96,7 +151,7 @@ public  class Hexagon extends GameObject {
 
         // draw
         //canvas.drawPath(polyPath, paint);
-        if (rendered &&  !shooter) canvas.drawCircle(getX()*scaleX,getY()*scaleY +Utils.offsetY, getRadius()*scaleX, paint);
+        if (rendered &&  !shooter) canvas.drawCircle(getX()*scaleX,getY()*scaleY -(Utils.offsetY*scaleY), getRadius()*scaleX, paint);
         else if (rendered) canvas.drawCircle(getX()*scaleX,getY()*scaleY, getRadius()*scaleX, paint);
         this.lastDrawNanoTime= System.nanoTime();
 
@@ -152,6 +207,7 @@ public  class Hexagon extends GameObject {
 
         //setRotation(getRotation()+1);
         //setRotation(20);
+        //this.y-=(Utils.offsetY);
         this.center=new Point(this.x,this.y);
         updatePoints();
     }

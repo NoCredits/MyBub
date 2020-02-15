@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
+import java.util.List;
+
 public abstract class GameObject {
 
     int x;
@@ -74,6 +76,8 @@ public abstract class GameObject {
         this.paint=new Paint();
         this.paint.setStyle(Paint.Style.FILL);
     }
+
+    public GameObject collide(List<GameObject> gameObjectList){ return null;};
 
     public GameObject(GameSurface gameSurface,Bitmap image, int rowCount, int colCount, int x, int y)  {
 
