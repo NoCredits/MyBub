@@ -39,6 +39,14 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         this.getHolder().addCallback(this);
     }
 
+    public void remove(GameObject gameObject){
+        Iterator<GameObject> iterator= this.gameList.iterator();
+
+        while(iterator.hasNext()) {
+            if (iterator.next()==gameObject) iterator.remove();
+        }
+    }
+
     public void update()  {
 
         for (GameObject game:gameList) {
@@ -46,12 +54,18 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
             game.update();
 
         }
-        GameObject foe=Utils.collide(ammo,gameList);
+        GameObject foe=ammo.collide(gameList);
         if (foe!=null){ //collision with foe
             ammo.setVelocity(0);
             ammo.shooter=false;
            // ammo.calculateScreenPosToGrid(0);
             ammo.calculateGridPosToScreen(0);
+
+            if (ammo.getColor()==foe.getColor()){
+                remove(foe);
+                remove(ammo);
+            }
+
             Hexagon hex=new Hexagon(this,15.6f,320/2,(int)(480),Color.BLUE);
             hex.setLayer(Utils.randInt(0,5));
             hex.setColor(Utils.hexColor(hex.getLayer()));
@@ -110,6 +124,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
             explosion.draw(canvas);
         }
 
+        Utils.setOffSetY(gameList);
         Utils.drawLayers(canvas,gameList);
 
     }
