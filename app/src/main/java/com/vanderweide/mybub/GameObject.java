@@ -33,6 +33,9 @@ public abstract class GameObject {
     boolean inGrid;
     int gridPosX;
     int gridPosY;
+    boolean vast;
+    boolean checked;
+    boolean remove;
 
 
     Bitmap image;

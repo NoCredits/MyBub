@@ -116,7 +116,7 @@ public  class Hexagon extends GameObject {
         GameObject collidedFoe=null;
 
         for (GameObject foe:Utils.getLayerlist(this.getLayer(),gameObjectList)){
-            if (this!=foe && this.isRendered() && foe.isRendered()) {
+            if (this!=foe && this.isRendered() && foe.isRendered() && foe.collidable) {
 //                double distance = Math.sqrt(
 //                        ((this.x - foe.x) * (this.x - foe.x))
 //                                + ((this.y - foe.y) * (this.y - foe.y)));

@@ -18,8 +18,6 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
     private GameThread gameThread;
 
-    private List<ChibiCharacter> chibiList = new ArrayList<ChibiCharacter>();
-    private List<Explosion> explosionList = new ArrayList<Explosion>();
     private List<GameObject> gameList = new ArrayList<GameObject>();
 
     private int gridRows=11;
@@ -49,21 +47,46 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
     public void update()  {
 
+
+        Utils.newDrop(gameList);
+
+        Iterator<GameObject> iterator= gameList.iterator();
+
+        while(iterator.hasNext()) {
+            GameObject game = iterator.next();
+            game.update();
+            if (game.remove && game.getY()+Utils.offsetY>400){
+                iterator.remove();
+            }
+        }
+
         for (GameObject game:gameList) {
             //if (!zList.contains(game.getZ_index()))
-            game.update();
 
         }
         GameObject foe=ammo.collide(gameList);
         if (foe!=null){ //collision with foe
             ammo.setVelocity(0);
             ammo.shooter=false;
+            ammo.inGrid=true;
+            ammo.collidable=true;
+
            // ammo.calculateScreenPosToGrid(0);
             ammo.calculateGridPosToScreen(0);
 
             if (ammo.getColor()==foe.getColor()){
-                remove(foe);
-                remove(ammo);
+               // remove(foe);
+               //remove(ammo);
+                foe.inGrid=false;
+                foe.collidable=false;
+                foe.remove=true;
+                foe.setMovingVectorY((int)(400+Utils.offsetY));
+                foe.setVelocity(0.5f);
+                ammo.inGrid=false;
+                ammo.collidable=false;
+                ammo.remove=true;
+                ammo.setMovingVectorY((int)(400+Utils.offsetY));
+                ammo.setVelocity(0.5f);
             }
 
             Hexagon hex=new Hexagon(this,15.6f,320/2,(int)(480),Color.BLUE);
@@ -75,22 +98,6 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
             ammo=hex;
         }
 
-        for(Explosion explosion: this.explosionList)  {
-            explosion.update();
-        }
-
-
-
-        Iterator<Explosion> iterator= this.explosionList.iterator();
-        while(iterator.hasNext())  {
-            Explosion explosion = iterator.next();
-
-            if(explosion.isFinish()) {
-                // If explosion finish, Remove the current element from the iterator & list.
-                iterator.remove();
-                continue;
-            }
-        }
     }
 
     @Override
@@ -120,9 +127,6 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         super.draw(canvas);
 
 
-        for(Explosion explosion: this.explosionList)  {
-            explosion.draw(canvas);
-        }
 
         Utils.setOffSetY(gameList);
         Utils.drawLayers(canvas,gameList);
@@ -133,12 +137,6 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
 
-        //rand=new Random();
-        Bitmap chibiBitmap1 = BitmapFactory.decodeResource(this.getResources(),R.drawable.chibi1);
-        ChibiCharacter chibi1 = new ChibiCharacter(this,chibiBitmap1,100,50);
-
-        Bitmap chibiBitmap2 = BitmapFactory.decodeResource(this.getResources(),R.drawable.chibi2);
-        ChibiCharacter chibi2 = new ChibiCharacter(this,chibiBitmap2,300,150);
 
         for (int r=0;r<gridRows;r++){
             for (int c=0;c<gridCols;c++) {
@@ -157,8 +155,13 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
                 hex.setColor(Utils.hexColor(hex.getLayer()));
                 hex.setLayer(1);
                 int ran=Utils.randInt(0,3);
-                    if (ran>2){
-                        grid.add(r,c,hex);
+                    if (ran>1){
+                        hex.setGridPosX(r);
+                        hex.setGridPosY(c);
+                        hex.setInGrid(true);
+                        hex.collidable=true;
+
+                       // grid.add(r,c,hex);
                         gameList.add(hex);
                     }
                   // hex.calculateGridPosToScreen(grid.getPadding());
@@ -173,20 +176,10 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         hex.setLayer(Utils.randInt(0,5));
         hex.setColor(Utils.hexColor(hex.getLayer()));
         hex.setLayer(1);
+
         gameList.add(hex);
         ammo=hex;
-
-        chibi1.setVelocity(0.5f);
-        chibi1.setMovingVector(Utils.randInt(-10,10),Utils.randInt(-10,10));
-        chibi1.setLayer(3);
-        chibi1.setZ_index(3);
-       // gameList.add(chibi1);
-
-        chibi2.setVelocity(Utils.rand.nextFloat());
-        chibi2.setMovingVector(Utils.randInt(-10,10),Utils.randInt(-10,10));
-        chibi2.setLayer(3);
-        chibi2.setZ_index(3);
-        //gameList.add(chibi2);
+        ammo.shooter=true;
 
 
         this.gameThread = new GameThread(this,holder);

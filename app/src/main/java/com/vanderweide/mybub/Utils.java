@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.util.Log;
 import android.util.SparseArray;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -13,6 +15,8 @@ public class Utils {
     public static float offsetY=0f;
 
     public static Random rand=new Random();
+
+    public static GameObject[][] grid;
 
     private static SparseArray<ArrayList<GameObject>> addToArray(SparseArray<ArrayList<GameObject>>  arr,Integer key, GameObject myObject) {
         ArrayList<GameObject> itemsList = arr.get(key);
@@ -69,9 +73,12 @@ public class Utils {
 
     public static void setOffSetY(List<GameObject> gameObjectList){
         int lowest=0; //laagste bal (hoogste Y)
+        offsetY=00;
         for (GameObject game: gameObjectList) {
-            if (game.getGridPosY()>lowest) lowest=game.getGridPosY();
-            if (lowest>11) offsetY=(float) (((lowest-11)+1)*(game.radius*2-game.radius/4)-game.radius);
+            if (game.inGrid){
+                if (game.getGridPosY()>lowest) lowest=game.getGridPosY();
+                if (lowest>11) offsetY=(float) (((lowest-11)+1)*(game.radius*2-game.radius/4)-game.radius);
+            }
         }
     }
 
@@ -106,5 +113,116 @@ public class Utils {
             break;
         }
         return color;
+    }
+
+    public static GameObject exists(int x, int y,List<GameObject> gameObjectList){
+        GameObject exists=null;
+        for (GameObject game: gameObjectList) {
+            if (game.getGridPosX()==x && game.getGridPosY()==y) {
+                exists=game;
+                break;
+            }
+        }
+        return exists;
+    }
+
+    public static void drop(List<GameObject> gameObjectList){
+
+        Iterator<GameObject> iterator= gameObjectList.iterator();
+
+        while(iterator.hasNext()) {
+            GameObject game=iterator.next();
+            if (!game.shooter){
+                boolean falling=true;
+                if (game.getGridPosY()%2==0){
+                    if (exists(game.getGridPosX(),game.getGridPosY()-1,gameObjectList)!=null)falling=false;
+                    if (exists(game.getGridPosX()-1,game.getGridPosY()-1,gameObjectList)!=null)falling=false;
+                    if (exists(game.getGridPosX()-1,game.getGridPosY(),gameObjectList)!=null)falling=false;
+                    if (exists(game.getGridPosX()+1,game.getGridPosY(),gameObjectList)!=null)falling=false;
+                } else {
+                    if (exists(game.getGridPosX(),game.getGridPosY()-1,gameObjectList)!=null)falling=false;
+                    if (exists(game.getGridPosX()+1,game.getGridPosY()-1,gameObjectList)!=null)falling=false;
+                    if (exists(game.getGridPosX()-1,game.getGridPosY(),gameObjectList)!=null)falling=false;
+                    if (exists(game.getGridPosX()+1,game.getGridPosY(),gameObjectList)!=null)falling=false;
+                }
+                if (falling) {
+                    iterator.remove();
+                    return;
+                }
+
+            }
+        }
+    }
+
+    public static void createArrayList(List<GameObject> gameObjectList){
+        int rowCount=500;
+        int columnCount=11;
+        grid = new GameObject[500][11];
+        for(int r=0; r < rowCount; r++) {
+            for(int c=0; c < columnCount; c++) {
+                grid[r][c]=null;
+            }
+        }
+        for (GameObject gameObject:gameObjectList){
+            if (gameObject.inGrid){
+                gameObject.checked=false;
+                grid[gameObject.getGridPosY()][gameObject.getGridPosX()]=gameObject;
+            }
+        }
+    }
+
+    public static void newDrop(List<GameObject> gameObjectList){
+        int columnCount=11;
+        createArrayList(gameObjectList);
+
+        for(int c=0; c < columnCount; c++) {
+           checkNext(c,0);
+        }
+        Iterator<GameObject> iterator= gameObjectList.iterator();
+
+        while(iterator.hasNext()) {
+            GameObject game = iterator.next();
+            if (!game.shooter) {
+                if (!game.checked) { //vallen maar
+                   game.inGrid=false;
+                   game.collidable=false;
+                   game.remove=true;
+                   game.setMovingVectorY(400);
+                   game.setVelocity(0.3f);
+                   //iterator.remove();
+                }
+            }
+        }
+
+
+    }
+
+    private static void checkNext(int x,int y){
+
+        if (x<0 || y<0 || x>10 || y>400) return;
+
+        if (grid[y][x] !=null)  {
+            if (!grid[y][x].checked){
+                grid[y][x].checked=true;
+            }
+            else return;
+        } else return;
+
+        if (y%2==0 ){ //even rij
+            checkNext(x,y-1); //rechtsboven
+            checkNext(x+1,y); //rechts
+            checkNext(x,y+1);//rechtsonder
+            checkNext(x-1,y+1); //linksonder
+            checkNext(x-1,y); //links
+            checkNext(x-1,y-1); //linksboven
+
+        } else { //oneven rij
+            checkNext(x+1,y-1); //rechtsboven
+            checkNext(x+1,y); //rechts
+            checkNext(x+1,y+1);//rechtsonder
+            checkNext(x,y+1); //linksonder
+            checkNext(x-1,y); //links
+            checkNext(x,y-1); //linksboven
+        }
     }
 }
