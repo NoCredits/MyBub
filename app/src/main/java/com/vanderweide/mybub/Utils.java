@@ -18,6 +18,7 @@ public class Utils {
 
     public static GameObject[][] grid;
 
+    public static boolean falling;
     private static SparseArray<ArrayList<GameObject>> addToArray(SparseArray<ArrayList<GameObject>>  arr,Integer key, GameObject myObject) {
         ArrayList<GameObject> itemsList = arr.get(key);
 
@@ -155,9 +156,10 @@ public class Utils {
     }
 
     public static void createArrayList(List<GameObject> gameObjectList){
-        int rowCount=500;
+        falling=false;
+        int rowCount=400;
         int columnCount=11;
-        grid = new GameObject[500][11];
+        grid = new GameObject[400][11];
         for(int r=0; r < rowCount; r++) {
             for(int c=0; c < columnCount; c++) {
                 grid[r][c]=null;
@@ -187,8 +189,8 @@ public class Utils {
                    game.inGrid=false;
                    game.collidable=false;
                    game.remove=true;
-                   game.setMovingVectorY(400);
-                   game.setVelocity(0.3f);
+                   game.setMovingVectorY(5000);
+                   game.setVelocity(0.4f);
                    //iterator.remove();
                 }
             }
@@ -225,4 +227,45 @@ public class Utils {
             checkNext(x,y-1); //linksboven
         }
     }
+
+    public static void checkNextCollide(int x,int y,int color){
+
+        if (x<0 || y<0 || x>10 || y>400) return;
+
+        Log.i("x",String.valueOf(x));
+        if (grid[y][x] !=null)  {
+            if (grid[y][x].color==color){
+                if (!grid[y][x].checked){
+                    grid[y][x].checked=true;
+                    if (!grid[y][x].shooter) {
+                        grid[y][x].inGrid = false;
+                        grid[y][x].collidable = false;
+                        grid[y][x].remove = true;
+                        grid[y][x].setMovingVectorY((int) (1000 + Utils.offsetY));
+                        grid[y][x].setVelocity(0.5f);
+                        falling=true;
+                    }
+                }
+                else return;
+            } else return;
+        } else return;
+
+        if (y%2==0 ){ //even rij
+            checkNextCollide(x,y-1,color); //rechtsboven
+            checkNextCollide(x+1,y,color); //rechts
+            checkNextCollide(x,y+1,color);//rechtsonder
+            checkNextCollide(x-1,y+1,color); //linksonder
+            checkNextCollide(x-1,y,color); //links
+            checkNextCollide(x-1,y-1,color); //linksboven
+
+        } else { //oneven rij
+            checkNextCollide(x+1,y-1,color); //rechtsboven
+            checkNextCollide(x+1,y,color); //rechts
+            checkNextCollide(x+1,y+1,color);//rechtsonder
+            checkNextCollide(x,y+1,color); //linksonder
+            checkNextCollide(x-1,y,color); //links
+            checkNextCollide(x,y-1,color); //linksboven
+        }
+    }
+
 }

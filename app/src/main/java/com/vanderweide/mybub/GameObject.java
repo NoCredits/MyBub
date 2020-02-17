@@ -23,6 +23,7 @@ public abstract class GameObject {
     int screenHeight;
     float scaleX;
     float scaleY;
+    float scale;
 
     int layer;
     int z_index;
@@ -70,6 +71,7 @@ public abstract class GameObject {
     GameObject(GameSurface gameSurface,int color, float radius, int x, int y)  {
         this();
         this.gameSurface=gameSurface;
+        this.scale=this.getGameSurface().getWidth()/this.screenWidth;
         this.scaleX=this.getGameSurface().getWidth()/this.screenWidth;
         this.scaleY=this.getGameSurface().getHeight()/this.screenHeight;
         this.radius=radius;
@@ -78,6 +80,7 @@ public abstract class GameObject {
         this.y= y;
         this.paint=new Paint();
         this.paint.setStyle(Paint.Style.FILL);
+
     }
 
     public GameObject collide(List<GameObject> gameObjectList){ return null;};
