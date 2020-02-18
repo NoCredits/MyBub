@@ -19,6 +19,8 @@ public class Utils {
     public static GameObject[][] grid;
 
     public static boolean falling;
+    public static int ballsFalling=0;
+
     private static SparseArray<ArrayList<GameObject>> addToArray(SparseArray<ArrayList<GameObject>>  arr,Integer key, GameObject myObject) {
         ArrayList<GameObject> itemsList = arr.get(key);
 
@@ -90,7 +92,7 @@ public class Utils {
     }
 
     public static int hexColor(int index) {
-        int color=Color.WHITE;
+        int color;
         switch (index) {
             case 0:
                 color= Color.GREEN;
@@ -127,36 +129,9 @@ public class Utils {
         return exists;
     }
 
-    public static void drop(List<GameObject> gameObjectList){
-
-        Iterator<GameObject> iterator= gameObjectList.iterator();
-
-        while(iterator.hasNext()) {
-            GameObject game=iterator.next();
-            if (!game.shooter){
-                boolean falling=true;
-                if (game.getGridPosY()%2==0){
-                    if (exists(game.getGridPosX(),game.getGridPosY()-1,gameObjectList)!=null)falling=false;
-                    if (exists(game.getGridPosX()-1,game.getGridPosY()-1,gameObjectList)!=null)falling=false;
-                    if (exists(game.getGridPosX()-1,game.getGridPosY(),gameObjectList)!=null)falling=false;
-                    if (exists(game.getGridPosX()+1,game.getGridPosY(),gameObjectList)!=null)falling=false;
-                } else {
-                    if (exists(game.getGridPosX(),game.getGridPosY()-1,gameObjectList)!=null)falling=false;
-                    if (exists(game.getGridPosX()+1,game.getGridPosY()-1,gameObjectList)!=null)falling=false;
-                    if (exists(game.getGridPosX()-1,game.getGridPosY(),gameObjectList)!=null)falling=false;
-                    if (exists(game.getGridPosX()+1,game.getGridPosY(),gameObjectList)!=null)falling=false;
-                }
-                if (falling) {
-                    iterator.remove();
-                    return;
-                }
-
-            }
-        }
-    }
-
     public static void createArrayList(List<GameObject> gameObjectList){
         falling=false;
+        ballsFalling=0;
         int rowCount=400;
         int columnCount=11;
         grid = new GameObject[400][11];
@@ -168,6 +143,7 @@ public class Utils {
         for (GameObject gameObject:gameObjectList){
             if (gameObject.inGrid){
                 gameObject.checked=false;
+                gameObject.shouldDrop=false;
                 grid[gameObject.getGridPosY()][gameObject.getGridPosX()]=gameObject;
             }
         }
@@ -232,18 +208,14 @@ public class Utils {
 
         if (x<0 || y<0 || x>10 || y>400) return;
 
-        Log.i("x",String.valueOf(x));
+        //Log.i("x",String.valueOf(x));
         if (grid[y][x] !=null)  {
             if (grid[y][x].color==color){
                 if (!grid[y][x].checked){
                     grid[y][x].checked=true;
                     if (!grid[y][x].shooter) {
-                        grid[y][x].inGrid = false;
-                        grid[y][x].collidable = false;
-                        grid[y][x].remove = true;
-                        grid[y][x].setMovingVectorY((int) (1000 + Utils.offsetY));
-                        grid[y][x].setVelocity(0.5f);
-                        falling=true;
+                        grid[y][x].shouldDrop = true;
+                        ballsFalling++;
                     }
                 }
                 else return;
@@ -266,6 +238,33 @@ public class Utils {
             checkNextCollide(x-1,y,color); //links
             checkNextCollide(x,y-1,color); //linksboven
         }
+    }
+
+    public static List<GameObject> createGrid(GameSurface gameSurface){
+        List<GameObject> gameList=new ArrayList<>();
+        int gridRows=11;
+        int gridCols=11;
+        for (int r=0;r<gridRows;r++){
+            for (int c=0;c<gridCols;c++) {
+
+                Hexagon hex=new Hexagon(gameSurface,Color.BLUE);
+                hex.setZ_index(2);
+                hex.setColor(Utils.hexColor(Utils.randInt(0,5)));
+                hex.setLayer(1);
+                int ran=Utils.randInt(0,3);
+                if (ran>2){
+                    hex.setGridPosX(r);
+                    hex.setGridPosY(c);
+                    hex.setInGrid(true);
+                    hex.collidable=true;
+                    hex.calculateGridPosToScreen(0);
+
+                    gameList.add(hex);
+                }
+            }
+        }
+        return gameList;
+
     }
 
 }

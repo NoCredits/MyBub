@@ -37,6 +37,7 @@ public abstract class GameObject {
     boolean vast;
     boolean checked;
     boolean remove;
+    boolean shouldDrop;
 
 
     Bitmap image;

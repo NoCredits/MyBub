@@ -144,13 +144,11 @@ public  class Hexagon extends GameObject {
 
         for (GameObject foe:Utils.getLayerlist(this.getLayer(),gameObjectList)){
             if (this!=foe && this.isRendered() && foe.isRendered() && foe.collidable) {
-//                double distance = Math.sqrt(
-//                        ((this.x - foe.x) * (this.x - foe.x))
-//                                + ((this.y - foe.y) * (this.y - foe.y)));
+
                 double distance = Math.sqrt(
                         ((this.x - foe.x) * (this.x - foe.x))
                                 + ((this.y - foe.y +Utils.offsetY) * (this.y - foe.y+Utils.offsetY)));
-                if (distance < this.radius + foe.radius) {
+                if (distance < this.radius + foe.radius -5) {
                     collidedFoe = foe;
                     calcPos(foe);
                     return collidedFoe; //balls have collided
@@ -206,20 +204,12 @@ public  class Hexagon extends GameObject {
             this.x = x +  (int)(distance* movingVectorX / movingVectorLength);
             this.y = y +  (int)(distance* movingVectorY / movingVectorLength);
 
-            // When the game's character touches the edge of the screen, then change direction
-//            if(this.x < this.getRadius() )  {
-//                this.x = (int) this.getRadius();
-//                this.movingVectorX = - this.movingVectorX;
-//            } else if(this.x > this.screenWidth -this.getRadius())  {
-//                this.x= (int) (this.screenWidth-this.getRadius());
-//                this.movingVectorX = - this.movingVectorX;
-//            }
 
-            if(this.x < this.getRadius() )  {
-                this.x = (int) this.getRadius();
+            if(this.x < this.getRadius() +5)  { //-1 ? even als test. zat een bug in
+                this.x = (int) this.getRadius()+5;
                 this.movingVectorX = - this.movingVectorX;
-            } else if(this.x > this.screenWidth +this.getRadius()*2)  {
-                this.x= (int) (this.screenWidth + this.getRadius()*2);
+            } else if(this.x > this.screenWidth +this.getRadius()*2 -10)  { //+1? bug tracking
+                this.x= (int) (this.screenWidth + this.getRadius()*2 -10);
                 this.movingVectorX = - this.movingVectorX;
             }
 
@@ -227,10 +217,10 @@ public  class Hexagon extends GameObject {
                 this.y = (int) this.getRadius();
                 this.movingVectorY = - this.movingVectorY;
             }
-            //else if(this.y > this.screenHeight- this.getRadius())  {
-             //   this.y= (int) (this.screenHeight- this.getRadius());
-             //  this.movingVectorY = - this.movingVectorY ;
-            //}
+            else if(shooter && this.y > this.screenHeight- this.getRadius())  {
+                this.y= (int) (this.screenHeight- this.getRadius());
+               this.movingVectorY = - this.movingVectorY ;
+            }
 
         }
 
@@ -241,7 +231,7 @@ public  class Hexagon extends GameObject {
         updatePoints();
     }
 
-    public void calculateScreenPosToGrid(int padding){
+    /*public void calculateScreenPosToGrid(int padding){
         this.gridPosX=(int)((this.getX()+this.radius)/(this.getRadius()*2+padding));
         this.gridPosY=(int)((this.getY()+radius)/(this.getRadius()*2-(this.radius/4)));
         this.gridPosX--;
@@ -249,7 +239,7 @@ public  class Hexagon extends GameObject {
         setCenter(this.x,this.y);
         updatePoints();
     }
-
+*/
 
     public void calculateGridPosToScreen(int padding){
         //int r=(this.gridPosY - this.radius/2) * 3;
