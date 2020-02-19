@@ -128,24 +128,50 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            //draw arrow
+            if (ammo.getVelocity()==0){
+                Utils.arrowFromX =  (int)(ammo.getX() *ammo.scale);
+                Utils.arrowFromY = (int)(ammo.getY() *ammo.scale);
+                Utils.arrowToX =  (int)(event.getX() );
+                Utils.arrowToY = (int)(event.getY() );
+                Utils.showArrow=true;
 
+            }
+            return true;
+        }
+
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            if (ammo.getVelocity()==0 && Utils.showArrow) {
+                Utils.arrowToX = (int) (event.getX());
+                Utils.arrowToY = (int) (event.getY());
+                return true;
+            }
+        }
+
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+
+
+            Utils.showArrow=false;
             int x=  (int)(event.getX() /ammo.scale);
             int y = (int)(event.getY() /ammo.scale);
 
-//                if( ammo.getX()-ammo.getRadius() < x && x < ammo.getX() + ammo.getRadius()
-//                        && ammo.getY()-ammo.getRadius() < y && y < ammo.getY()+ ammo.getRadius())  {
-//
-//                }
+            if (y<ammo.getY() ){
+                if (ammo.getVelocity()==0 || Utils.showArrow) {
 
-            ammo.setVelocity(0.4f);
-            Log.d("x y klikX klikY ",String.valueOf(ammo.getX())+" "+String.valueOf(ammo.getY())+" "+String.valueOf(x)+" "+String.valueOf(y));
-            ammo.setMovingVectorX(x<ammo.getX()?x-ammo.getX():x-ammo.getX());
-            ammo.setMovingVectorY(y<ammo.getY()?y-ammo.getY():y+ammo.getY());
+                    ammo.setVelocity(0.4f);
+                    Log.d("x y klikX klikY ", String.valueOf(ammo.getX()) + " " + String.valueOf(ammo.getY()) + " " + String.valueOf(x) + " " + String.valueOf(y));
+                    ammo.setMovingVectorX(x < ammo.getX() ? x - ammo.getX() : x - ammo.getX());
+                    ammo.setMovingVectorY(y < ammo.getY() ? y - ammo.getY() : y + ammo.getY());
+                }
+            }
+
 
             return true;
         }
+
         return false;
     }
+
 
     @Override
     public void draw(Canvas canvas)  {

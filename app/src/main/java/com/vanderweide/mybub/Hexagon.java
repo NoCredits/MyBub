@@ -174,7 +174,7 @@ public  class Hexagon extends GameObject {
         }
         polyPath.lineTo(points[0].x, points[0].y);
 
-        canvas.drawLine(0,0,100,100,paint);
+      //  canvas.drawLine(0,0,100,100,paint);
         // draw
         //canvas.drawPath(polyPath, paint);
         if (rendered &&  !shooter) canvas.drawCircle(getX()*scale,getY()*scale -(Utils.offsetY*scale), getRadius()*scale, paint);

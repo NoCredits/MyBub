@@ -2,6 +2,7 @@ package com.vanderweide.mybub;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.Log;
 import android.util.SparseArray;
 import java.util.ArrayList;
@@ -20,6 +21,11 @@ public class Utils {
 
     public static boolean falling;
     public static int ballsFalling=0;
+    public static int arrowFromX=0;
+    public static int arrowFromY=0;
+    public static int arrowToX=0;
+    public static int arrowToY=0;
+    public static boolean showArrow;
 
     private static SparseArray<ArrayList<GameObject>> addToArray(SparseArray<ArrayList<GameObject>>  arr,Integer key, GameObject myObject) {
         ArrayList<GameObject> itemsList = arr.get(key);
@@ -72,6 +78,13 @@ public class Utils {
                 }
             }
         }
+
+       if (showArrow){
+           Paint paint=new Paint();
+           paint.setColor(Color.WHITE);
+           paint.setStyle(Paint.Style.FILL);
+           canvas.drawLine(arrowFromX,arrowFromY,arrowToX,arrowToY,paint);
+       }
     }
 
     public static void setOffSetY(List<GameObject> gameObjectList){
