@@ -252,7 +252,7 @@ public class Utils {
                 hex.setColor(Utils.hexColor(Utils.randInt(0,5)));
                 hex.setLayer(1);
                 int ran=Utils.randInt(0,3);
-                if (ran>2){
+                if (ran>0){
                     hex.setGridPosX(r);
                     hex.setGridPosY(c);
                     hex.setInGrid(true);
