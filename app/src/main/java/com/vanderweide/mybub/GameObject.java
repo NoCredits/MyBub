@@ -10,6 +10,16 @@ public abstract class GameObject {
 
     int x;
     int y;
+
+    public float getDX() {
+        return  x*scale+offsetX*scale;
+    }
+
+    public float getDY() {
+        return  y*scale+offsetY*scale;
+    }
+
+
     int color;
     Paint paint;
     float radius;
@@ -24,6 +34,8 @@ public abstract class GameObject {
     float scaleX;
     float scaleY;
     float scale;
+    float offsetX;
+    float offsetY;
 
     int layer;
     int z_index;
@@ -34,11 +46,11 @@ public abstract class GameObject {
     boolean inGrid;
     int gridPosX;
     int gridPosY;
-    boolean vast;
     boolean checked;
     boolean remove;
     boolean shouldDrop;
 
+    GameObject NE,E,SE,SW,W,NW;
 
     Bitmap image;
     int rowCount;
@@ -64,8 +76,8 @@ public abstract class GameObject {
         this.collidable=false;
         this.screenWidth=320;
         this.screenHeight=480;
-        //this.scaleX=1.6f;
-        //this.scaleY=1.6f;
+        offsetX=0;
+        offsetY=0;
     }
 
 

@@ -1,8 +1,6 @@
 package com.vanderweide.mybub;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
@@ -20,8 +18,6 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
     private List<GameObject> gameList = new ArrayList<GameObject>();
 
-    private int gridRows=11;
-    private int gridCols=11;
     private GameObject ammo;
 
     public GameSurface(Context context)  {
@@ -88,7 +84,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
                 }
 
             Hexagon hex=new Hexagon(this,Color.BLUE,true);
-            hex.setLayer(Utils.randInt(0,5));
+            hex.setLayer(Utils.randInt(0,4));
             hex.setColor(Utils.hexColor(hex.getLayer()));
             hex.setLayer(1);
             hex.shooter=true;
@@ -114,7 +110,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
             //create shooter
             Hexagon hex=new Hexagon(this,Color.BLUE,true);
 
-            hex.setLayer(Utils.randInt(0,5));
+            hex.setLayer(Utils.randInt(0,4));
             hex.setColor(Utils.hexColor(hex.getLayer()));
             hex.setLayer(1);
 
@@ -159,7 +155,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
                 if (ammo.getVelocity()==0 || Utils.showArrow) {
 
                     ammo.setVelocity(0.4f);
-                    Log.d("x y klikX klikY ", String.valueOf(ammo.getX()) + " " + String.valueOf(ammo.getY()) + " " + String.valueOf(x) + " " + String.valueOf(y));
+                   // Log.d("x y klikX klikY ", String.valueOf(ammo.getX()) + " " + String.valueOf(ammo.getY()) + " " + String.valueOf(x) + " " + String.valueOf(y));
                     ammo.setMovingVectorX(x < ammo.getX() ? x - ammo.getX() : x - ammo.getX());
                     ammo.setMovingVectorY(y < ammo.getY() ? y - ammo.getY() : y + ammo.getY());
                 }
@@ -193,7 +189,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         //create shooter
         Hexagon hex=new Hexagon(this,Color.BLUE,true);
 
-        hex.setLayer(Utils.randInt(0,5));
+        hex.setLayer(Utils.randInt(0,4));
         hex.setColor(Utils.hexColor(hex.getLayer()));
         hex.setLayer(1);
 

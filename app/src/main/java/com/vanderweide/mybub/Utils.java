@@ -19,6 +19,8 @@ public class Utils {
 
     public static GameObject[][] grid;
 
+    public static int cols=12;
+
     public static boolean falling;
     public static int ballsFalling=0;
     public static int arrowFromX=0;
@@ -82,7 +84,8 @@ public class Utils {
        if (showArrow){
            Paint paint=new Paint();
            paint.setColor(Color.WHITE);
-           paint.setStyle(Paint.Style.FILL);
+           paint.setStyle(Paint.Style.STROKE);
+           paint.setStrokeWidth(5);
            canvas.drawLine(arrowFromX,arrowFromY,arrowToX,arrowToY,paint);
        }
     }
@@ -94,6 +97,11 @@ public class Utils {
             if (game.inGrid){
                 if (game.getGridPosY()>lowest) lowest=game.getGridPosY();
                 if (lowest>11) offsetY=(float) (((lowest-11)+1)*(game.radius*2-game.radius/4)-game.radius);
+            }
+        }
+        for (GameObject game: gameObjectList) {
+            if (game.inGrid){
+                game.offsetY=-offsetY;
             }
         }
     }
@@ -117,13 +125,13 @@ public class Utils {
                 color= Color.BLUE;
             break;
             case 3:
-                color= Color.WHITE;
+                color= Color.LTGRAY;
             break;
             case 4:
-                color= Color.YELLOW;
+                color= Color.MAGENTA;
             break;
             case 5:
-                color= Color.MAGENTA;
+                color= Color.YELLOW;
             break;
             default: color=Color.WHITE;
             break;
@@ -142,12 +150,45 @@ public class Utils {
         return exists;
     }
 
+    private static void attachNeighbours( ){
+        int rowCount=400;
+        int columnCount=Utils.cols;
+        for(int r=0; r < rowCount; r++) {
+            for(int c=0; c < columnCount; c++) {
+                GameObject gameObject=grid[r][c];
+                if (gameObject!=null){
+                    if (r%2==0 ){ //even rij
+                        gameObject.NE=neighbour(c,r-1); //rechtsboven
+                        gameObject.E=neighbour(c+1,r); //rechts
+                        gameObject.SE=neighbour(c,r+1);//rechtsonder
+                        gameObject.SW=neighbour(c-1,r+1); //linksonder
+                        gameObject.W=neighbour(c-1,r); //links
+                        gameObject.NW=neighbour(c-1,r-1); //linksboven
+
+                    } else { //oneven rij
+                        gameObject.NE=neighbour(c+1,r-1); //rechtsboven
+                        gameObject.E=neighbour(c+1,r); //rechts
+                        gameObject.SE=neighbour(c+1,r+1);//rechtsonder
+                        gameObject.SW=neighbour(c,r+1); //linksonder
+                        gameObject.W=neighbour(c-1,r); //links
+                        gameObject.NW=neighbour(c,r-1); //linksboven
+                    }
+                }
+            }
+        }
+    }
+
+    private static GameObject neighbour(int column,int row){
+        if (column<0 || row<0 || column>Utils.cols-1 || row>400) return null;
+        return grid[row][column];
+    }
+
     public static void createArrayList(List<GameObject> gameObjectList){
         falling=false;
         ballsFalling=0;
         int rowCount=400;
-        int columnCount=11;
-        grid = new GameObject[400][11];
+        int columnCount=Utils.cols;
+        grid = new GameObject[400][Utils.cols];
         for(int r=0; r < rowCount; r++) {
             for(int c=0; c < columnCount; c++) {
                 grid[r][c]=null;
@@ -160,10 +201,11 @@ public class Utils {
                 grid[gameObject.getGridPosY()][gameObject.getGridPosX()]=gameObject;
             }
         }
+        attachNeighbours();
     }
 
     public static void newDrop(List<GameObject> gameObjectList){
-        int columnCount=11;
+        int columnCount=Utils.cols;
         createArrayList(gameObjectList);
 
         for(int c=0; c < columnCount; c++) {
@@ -188,46 +230,46 @@ public class Utils {
 
     }
 
-    private static void checkNext(int x,int y){
+    private static void checkNext(int c,int r){
 
-        if (x<0 || y<0 || x>10 || y>400) return;
+        if (c<0 || r<0 || c>Utils.cols-1 || r>400) return;
 
-        if (grid[y][x] !=null)  {
-            if (!grid[y][x].checked){
-                grid[y][x].checked=true;
+        if (grid[r][c] !=null)  {
+            if (!grid[r][c].checked){
+                grid[r][c].checked=true;
             }
             else return;
         } else return;
 
-        if (y%2==0 ){ //even rij
-            checkNext(x,y-1); //rechtsboven
-            checkNext(x+1,y); //rechts
-            checkNext(x,y+1);//rechtsonder
-            checkNext(x-1,y+1); //linksonder
-            checkNext(x-1,y); //links
-            checkNext(x-1,y-1); //linksboven
+        if (r%2==0 ){ //even rij
+            checkNext(c,r-1); //rechtsboven
+            checkNext(c+1,r); //rechts
+            checkNext(c,r+1);//rechtsonder
+            checkNext(c-1,r+1); //linksonder
+            checkNext(c-1,r); //links
+            checkNext(c-1,r-1); //linksboven
 
         } else { //oneven rij
-            checkNext(x+1,y-1); //rechtsboven
-            checkNext(x+1,y); //rechts
-            checkNext(x+1,y+1);//rechtsonder
-            checkNext(x,y+1); //linksonder
-            checkNext(x-1,y); //links
-            checkNext(x,y-1); //linksboven
+            checkNext(c+1,r-1); //rechtsboven
+            checkNext(c+1,r); //rechts
+            checkNext(c+1,r+1);//rechtsonder
+            checkNext(c,r+1); //linksonder
+            checkNext(c-1,r); //links
+            checkNext(c,r-1); //linksboven
         }
     }
 
-    public static void checkNextCollide(int x,int y,int color){
+    public static void checkNextCollide(int c,int r,int color){
 
-        if (x<0 || y<0 || x>10 || y>400) return;
+        if (c<0 || r<0 || c>Utils.cols-1 || r>400) return;
 
-        //Log.i("x",String.valueOf(x));
-        if (grid[y][x] !=null)  {
-            if (grid[y][x].color==color){
-                if (!grid[y][x].checked){
-                    grid[y][x].checked=true;
-                    if (!grid[y][x].shooter) {
-                        grid[y][x].shouldDrop = true;
+        //Log.i("c",String.valueOf(c));
+        if (grid[r][c] !=null)  {
+            if (grid[r][c].color==color){
+                if (!grid[r][c].checked){
+                    grid[r][c].checked=true;
+                    if (!grid[r][c].shooter) {
+                        grid[r][c].shouldDrop = true;
                         ballsFalling++;
                     }
                 }
@@ -235,44 +277,47 @@ public class Utils {
             } else return;
         } else return;
 
-        if (y%2==0 ){ //even rij
-            checkNextCollide(x,y-1,color); //rechtsboven
-            checkNextCollide(x+1,y,color); //rechts
-            checkNextCollide(x,y+1,color);//rechtsonder
-            checkNextCollide(x-1,y+1,color); //linksonder
-            checkNextCollide(x-1,y,color); //links
-            checkNextCollide(x-1,y-1,color); //linksboven
+        if (r%2==0 ){ //even rij
+            checkNextCollide(c,r-1,color); //rechtsboven
+            checkNextCollide(c+1,r,color); //rechts
+            checkNextCollide(c,r+1,color);//rechtsonder
+            checkNextCollide(c-1,r+1,color); //linksonder
+            checkNextCollide(c-1,r,color); //links
+            checkNextCollide(c-1,r-1,color); //linksboven
 
         } else { //oneven rij
-            checkNextCollide(x+1,y-1,color); //rechtsboven
-            checkNextCollide(x+1,y,color); //rechts
-            checkNextCollide(x+1,y+1,color);//rechtsonder
-            checkNextCollide(x,y+1,color); //linksonder
-            checkNextCollide(x-1,y,color); //links
-            checkNextCollide(x,y-1,color); //linksboven
+            checkNextCollide(c+1,r-1,color); //rechtsboven
+            checkNextCollide(c+1,r,color); //rechts
+            checkNextCollide(c+1,r+1,color);//rechtsonder
+            checkNextCollide(c,r+1,color); //linksonder
+            checkNextCollide(c-1,r,color); //links
+            checkNextCollide(c,r-1,color); //linksboven
         }
     }
 
     public static List<GameObject> createGrid(GameSurface gameSurface){
         List<GameObject> gameList=new ArrayList<>();
         int gridRows=11;
-        int gridCols=11;
+        int gridCols=Utils.cols;
         for (int r=0;r<gridRows;r++){
             for (int c=0;c<gridCols;c++) {
 
                 Hexagon hex=new Hexagon(gameSurface,Color.BLUE);
                 hex.setZ_index(2);
-                hex.setColor(Utils.hexColor(Utils.randInt(0,5)));
+                hex.setColor(Utils.hexColor(Utils.randInt(0,4)));
                 hex.setLayer(1);
                 int ran=Utils.randInt(0,3);
-                if (ran>0){
-                    hex.setGridPosX(r);
-                    hex.setGridPosY(c);
+                if (ran>-1){
+                    hex.setGridPosX(c);
+                     hex.setGridPosY(r);
                     hex.setInGrid(true);
                     hex.collidable=true;
                     hex.calculateGridPosToScreen(0);
 
-                    gameList.add(hex);
+                //    if ((r%2!=0 && c%2==0) || (r%2==0 ) )
+                    if ((r%2!=0 && (c!=2 && c!=5 && c!=8 && c!=11 ))
+                            || (r%2==0 ) && (c!=1 && c!=4 && c!=7 && c!=10) )
+                        gameList.add(hex);
                 }
             }
         }

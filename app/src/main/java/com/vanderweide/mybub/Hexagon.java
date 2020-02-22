@@ -1,6 +1,7 @@
 package com.vanderweide.mybub;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 
@@ -33,7 +34,7 @@ public  class Hexagon extends GameObject {
 
     public Hexagon(GameSurface gameSurface, int color) {
         //super(gameSurface,color,,0,0);
-        super(gameSurface,color,(320/10)/2.05f,1,1);
+        super(gameSurface,color,(320/(Utils.cols-1))/1.95f,1,1);
         this.center=new Point(1,1);
 //        this.paint.setStyle(Paint.Style.FILL);
         //this.paint.setStyle(Paint.Style.STROKE);
@@ -41,7 +42,7 @@ public  class Hexagon extends GameObject {
     }
 
     public Hexagon(GameSurface gameSurface, int color, boolean shooter) {
-        super(gameSurface,color,(320/10)/2.05f,1,1);
+        super(gameSurface,color,(320/(Utils.cols-1))/1.95f,1,1);
 
         if (shooter){
             this.x=(int)(this.screenWidth /2  + radius );
@@ -51,9 +52,6 @@ public  class Hexagon extends GameObject {
 
         }
         this.center=new Point(this.x,this.y);
-        //super(gameSurface,color,(320/11)/2,0,0);
-//        this.paint.setStyle(Paint.Style.FILL);
-        //this.paint.setStyle(Paint.Style.STROKE);
         updatePoints();
     }
 
@@ -158,11 +156,36 @@ public  class Hexagon extends GameObject {
         return collidedFoe;
     }
 
+    private void draw_connectors_BAK(Canvas canvas){
+        Paint paint=new Paint();
+        paint.setColor(getColor());
+        paint.setStyle(this.paint.getStyle());
+        canvas.drawCircle(getX()*scale,getY()*scale -(Utils.offsetY*scale), getRadius()*scale*.8f, paint);
+        if (gridPosY%2==0) {
+            if (gridPosX%3==0){
+                canvas.drawLine(getX()*scale,getY()*scale-(Utils.offsetY*scale),getX()*scale+140,getY()*scale+140-(Utils.offsetY*scale),paint);
+                canvas.drawLine(getX()*scale,getY()*scale-(Utils.offsetY*scale),getX()*scale-140,getY()*scale-(Utils.offsetY*scale),paint);
+                canvas.drawLine(getX()*scale,getY()*scale-(Utils.offsetY*scale),getX()*scale+140,getY()*scale-140-(Utils.offsetY*scale),paint);
+
+            }
+        } else {
+            //canvas.drawLine(getX()*scale,getY()*scale-(Utils.offsetY*scale),getX()*scale+140,getY()*scale+140-(Utils.offsetY*scale),paint);
+
+        }
+    }
+
+
+
     public void draw(Canvas canvas){
         // Store before changing.
         Paint paint=new Paint();
         paint.setColor(getColor());
         paint.setStyle(this.paint.getStyle());
+
+        Paint paintLine=new Paint();
+        paintLine.setColor(Color.DKGRAY);
+        paintLine.setStrokeWidth(8);
+        paintLine.setStyle(Paint.Style.STROKE);
 
         // path
         Path polyPath = new Path();
@@ -177,8 +200,61 @@ public  class Hexagon extends GameObject {
       //  canvas.drawLine(0,0,100,100,paint);
         // draw
         //canvas.drawPath(polyPath, paint);
-        if (rendered &&  !shooter) canvas.drawCircle(getX()*scale,getY()*scale -(Utils.offsetY*scale), getRadius()*scale, paint);
-        else if (rendered) canvas.drawCircle(getX()*scale,getY()*scale, getRadius()*scale, paint);
+        if (rendered &&  !shooter){
+//            canvas.drawCircle(getX()*scale,getY()*scale -(Utils.offsetY*scale), getRadius()*scale, paint);
+            canvas.drawCircle(getDX(),getDY(), getRadius()*scale*.7f, paint);
+
+
+
+            if (!shouldDrop){
+                if (NE!=null) {
+                    float dy=((NE.getY()-getY()));
+                    float dx=((NE.getX()-getX()));
+                    if (NE.color==color) paintLine.setColor(color);
+                    else paintLine.setColor(Color.DKGRAY);
+                   // canvas.drawLine(getDX(),getDY(),NE.getDX(),NE.getDY(),paintLine);
+                    canvas.drawLine(getDX()+dx,getDY()+dy,NE.getDX()-dx,NE.getDY()-dy,paintLine);
+                }
+                if (E!=null)  {
+                    float dy=((E.getY()-getY()));
+                    float dx=((E.getX()-getX()));
+                    if (E.color==color) paintLine.setColor(color);
+                    else paintLine.setColor(Color.DKGRAY);
+                    canvas.drawLine(getDX()+dx,getDY()+dy,E.getDX()-dx,E.getDY()-dy,paintLine);
+                }
+                if (SE!=null)  {
+                    float dy=((SE.getY()-getY()));
+                    float dx=((SE.getX()-getX()));
+                    if (SE.color==color) paintLine.setColor(color);
+                    else paintLine.setColor(Color.DKGRAY);
+                    canvas.drawLine(getDX()+dx,getDY()+dy,SE.getDX()-dx,SE.getDY()-dy,paintLine);
+                }
+                if (NW!=null)  {
+                    float dy=((NW.getY()-getY()));
+                    float dx=((NW.getX()-getX()));
+                    if (NW.color==color) paintLine.setColor(color);
+                    else paintLine.setColor(Color.DKGRAY);
+                    canvas.drawLine(getDX()+dx,getDY()+dy,NW.getDX()-dx,NW.getDY()-dy,paintLine);
+                }
+                if (W!=null)  {
+                    float dy=((W.getY()-getY()));
+                    float dx=((W.getX()-getX()));
+                    if (W.color==color) paintLine.setColor(color);
+                    else paintLine.setColor(Color.DKGRAY);
+                    canvas.drawLine(getDX()+dx,getDY()+dy,W.getDX()-dx,W.getDY()-dy,paintLine);
+                }
+                if (SW!=null)  {
+                    float dy=((SW.getY()-getY()));
+                    float dx=((SW.getX()-getX()));
+                    if (SW.color==color) paintLine.setColor(color);
+                    else paintLine.setColor(Color.DKGRAY);
+                    canvas.drawLine(getDX()+dx,getDY()+dy,SW.getDX()-dx,SW.getDY()-dy,paintLine);
+                }
+            }
+
+
+        }
+        else if (rendered) canvas.drawCircle(getX()*scale,getY()*scale, getRadius()*scale*.8f, paint);
         this.lastDrawNanoTime= System.nanoTime();
 
     }
