@@ -20,6 +20,7 @@ public class Utils {
     public static GameObject[][] grid;
 
     public static int cols=12;
+    public static int rows=11;
 
     public static boolean falling;
     public static int ballsFalling=0;
@@ -28,6 +29,7 @@ public class Utils {
     public static int arrowToX=0;
     public static int arrowToY=0;
     public static boolean showArrow;
+    public static int score=0;
 
     private static SparseArray<ArrayList<GameObject>> addToArray(SparseArray<ArrayList<GameObject>>  arr,Integer key, GameObject myObject) {
         ArrayList<GameObject> itemsList = arr.get(key);
@@ -88,6 +90,11 @@ public class Utils {
            paint.setStrokeWidth(5);
            canvas.drawLine(arrowFromX,arrowFromY,arrowToX,arrowToY,paint);
        }
+
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);
+        paint.setTextSize(50);
+        canvas.drawText("score: "+score, 0, 2000, paint);
     }
 
     public static void setOffSetY(List<GameObject> gameObjectList){
@@ -220,8 +227,8 @@ public class Utils {
                    game.inGrid=false;
                    game.collidable=false;
                    game.remove=true;
-                   game.setMovingVectorY(5000);
-                   game.setVelocity(0.4f);
+                   game.setMovingVectorY(2000);
+                   game.setVelocity(0.8f);
                    //iterator.remove();
                 }
             }
@@ -297,7 +304,8 @@ public class Utils {
 
     public static List<GameObject> createGrid(GameSurface gameSurface){
         List<GameObject> gameList=new ArrayList<>();
-        int gridRows=11;
+        score=0;
+        int gridRows=rows;
         int gridCols=Utils.cols;
         for (int r=0;r<gridRows;r++){
             for (int c=0;c<gridCols;c++) {
@@ -307,7 +315,7 @@ public class Utils {
                 hex.setColor(Utils.hexColor(Utils.randInt(0,4)));
                 hex.setLayer(1);
                 int ran=Utils.randInt(0,3);
-                if (ran>-1){
+                if (ran>0){
                     hex.setGridPosX(c);
                      hex.setGridPosY(r);
                     hex.setInGrid(true);
@@ -324,5 +332,6 @@ public class Utils {
         return gameList;
 
     }
+
 
 }

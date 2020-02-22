@@ -34,8 +34,10 @@ public abstract class GameObject {
     float scaleX;
     float scaleY;
     float scale;
+    float scaleRadius;
     float offsetX;
     float offsetY;
+    int score;
 
     int layer;
     int z_index;
@@ -76,6 +78,8 @@ public abstract class GameObject {
         this.collidable=false;
         this.screenWidth=320;
         this.screenHeight=480;
+        this.scaleRadius=0.9f;
+        this.score=10;
         offsetX=0;
         offsetY=0;
     }

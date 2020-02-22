@@ -70,26 +70,20 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
 
                 if (Utils.ballsFalling>1){
                     ammo.shouldDrop=true;
-
                     for (GameObject gameObject:gameList){
                         if (gameObject.shouldDrop){
                             gameObject.inGrid = false;
                             gameObject.collidable = false;
                             gameObject.remove = true;
+                            gameObject.score=(Utils.ballsFalling*Utils.ballsFalling)*10;
+
                             gameObject.setMovingVectorX((int) (Utils.randInt(-500,500)));
                             gameObject.setMovingVectorY((int) (1000 + Utils.offsetY));
-                            gameObject.setVelocity(0.5f);
+                            gameObject.setVelocity(0.8f);
                         }
                     }
                 }
 
-            Hexagon hex=new Hexagon(this,Color.BLUE,true);
-            hex.setLayer(Utils.randInt(0,4));
-            hex.setColor(Utils.hexColor(hex.getLayer()));
-            hex.setLayer(1);
-            hex.shooter=true;
-            gameList.add(hex);
-            ammo=hex;
         }
 
         Utils.newDrop(gameList);
@@ -99,9 +93,20 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         while(iterator.hasNext()) {
             GameObject game = iterator.next();
             game.update();
-            if (game.remove && game.getY()+Utils.offsetY>1000){
+            if (game.remove && game.getY()+Utils.offsetY>600){
                 iterator.remove();
+                Utils.score+=game.score;
             }
+        }
+
+        if(foe!=null || ammo.shouldDrop){ //maak nieuwe ammo
+            Hexagon hex=new Hexagon(this,Color.BLUE,true);
+            hex.setLayer(Utils.randInt(0,4));
+            hex.setColor(Utils.hexColor(hex.getLayer()));
+            hex.setLayer(1);
+            hex.shooter=true;
+            gameList.add(hex);
+            ammo=hex;
         }
 
         if (gameList.size()<=1){ //alle ballen zijn op
@@ -151,10 +156,10 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
             int x=  (int)(event.getX() /ammo.scale);
             int y = (int)(event.getY() /ammo.scale);
 
-            if (y<ammo.getY() ){
+            if (y<ammo.getY()-10 ){
                 if (ammo.getVelocity()==0 || Utils.showArrow) {
 
-                    ammo.setVelocity(0.4f);
+                    ammo.setVelocity(0.5f);
                    // Log.d("x y klikX klikY ", String.valueOf(ammo.getX()) + " " + String.valueOf(ammo.getY()) + " " + String.valueOf(x) + " " + String.valueOf(y));
                     ammo.setMovingVectorX(x < ammo.getX() ? x - ammo.getX() : x - ammo.getX());
                     ammo.setMovingVectorY(y < ammo.getY() ? y - ammo.getY() : y + ammo.getY());
