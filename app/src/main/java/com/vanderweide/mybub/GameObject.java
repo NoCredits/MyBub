@@ -51,6 +51,9 @@ public abstract class GameObject {
     boolean checked;
     boolean remove;
     boolean shouldDrop;
+    boolean delete;
+    int type; //1:  NE, SE, W //2: NW, SW, E
+
 
     GameObject NE,E,SE,SW,W,NW;
 
@@ -80,6 +83,7 @@ public abstract class GameObject {
         this.screenHeight=480;
         this.scaleRadius=0.9f;
         this.score=10;
+        this.type=0;
         offsetX=0;
         offsetY=0;
     }
@@ -302,5 +306,5 @@ public abstract class GameObject {
         this.y=(int)(this.gridPosY*(this.radius+padding));
 
     }
-
+    public int getType(){return 0;}
 }

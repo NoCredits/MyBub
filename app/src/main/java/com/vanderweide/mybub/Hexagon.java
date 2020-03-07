@@ -6,6 +6,7 @@ import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.util.Log;
 
 import java.util.List;
 
@@ -110,6 +111,7 @@ public  class Hexagon extends GameObject {
     public void calcPos(GameObject foe) {
 
         if (this.getX() > foe.getX()) {//rechts
+            Log.i("rechts ",String.valueOf(y));
             if (this.getY() > foe.getY() -Utils.offsetY + foe.getRadius() / 2) { //onder
                 this.gridPosX = foe.gridPosX + 1;
                 this.gridPosY = foe.gridPosY + 1;
@@ -123,6 +125,7 @@ public  class Hexagon extends GameObject {
                 this.gridPosY = foe.gridPosY;
             }
         } else {  //links
+            Log.i("links ",String.valueOf(x));
             if (this.getY() > foe.getY() -Utils.offsetY+ foe.getRadius() / 2) { //onder
                 this.gridPosX = foe.gridPosX - 1;
                 this.gridPosY = foe.gridPosY + 1;
@@ -316,6 +319,18 @@ public  class Hexagon extends GameObject {
         updatePoints();
     }
 */
+    public int getType(){
+        if (this.gridPosY%2==0){ //even row
+            if (this.gridPosX==0 || this.gridPosX==3 || this.gridPosX==6 || this.gridPosX==9 || this.gridPosX==12 || this.gridPosX==15) type=1; //NE, SE, W
+            else if (this.gridPosX==2 || this.gridPosX==5 || this.gridPosX==8 || this.gridPosX==11 || this.gridPosX==14 || this.gridPosX==17) type=2; //NE, SE, W
+        } else {
+            if (this.gridPosX==0 || this.gridPosX==3 || this.gridPosX==6 || this.gridPosX==9 || this.gridPosX==12 || this.gridPosX==15) type=2; //NE, SE, W
+            else if (this.gridPosX==1 || this.gridPosX==4 || this.gridPosX==7 || this.gridPosX==10 || this.gridPosX==13 || this.gridPosX==16) type=1;//NE, SE, W
+        }
+        Log.i("type",this.type+" row "+this.gridPosY%2+" x= " + gridPosX );
+        return this.type;
+    }
+
 
     public void calculateGridPosToScreen(int padding){
         //int r=(this.gridPosY - this.radius/2) * 3;

@@ -14,10 +14,12 @@ import java.util.Random;
 public class Utils {
 
     public static float offsetY=0f;
+    public static int lowest=0;
 
     public static Random rand=new Random();
 
     public static GameObject[][] grid;
+    public static List <GameObject> backGrid;
 
     public static int cols=12;
     public static int rows=11;
@@ -59,6 +61,31 @@ public class Utils {
         return layerArray.get(layer);
     }
 
+    public static void createBackgroundGrid(GameSurface gameSurface){
+        backGrid=new ArrayList<>();
+        int gridCols=Utils.cols;
+        for (int r=0;r<13;r++){
+            for (int c=0;c<gridCols;c++) {
+                Hexagon hex=new Hexagon(gameSurface,Color.argb(100,50,50,50));
+
+                    hex.setGridPosX(c);
+                    hex.setGridPosY(r);
+                    hex.offsetY=0;
+                    hex.calculateGridPosToScreen(0);
+                    if ((r%2!=0 && (c!=2 && c!=5 && c!=8 && c!=11 ))
+                            || (r%2==0 ) && (c!=1 && c!=4 && c!=7 && c!=10) )
+                        backGrid.add(hex);
+                }
+        }
+    }
+
+    public static void drawBackgroundGrid(Canvas canvas){
+        for (GameObject gameObject:backGrid){
+            gameObject.draw(canvas);
+        }
+    }
+
+
     public static void drawLayers(Canvas canvas, List<GameObject> gameObjectList ){
         SparseArray<ArrayList<GameObject>> layerArray=getLayerArray(gameObjectList);
 
@@ -98,12 +125,15 @@ public class Utils {
     }
 
     public static void setOffSetY(List<GameObject> gameObjectList){
-        int lowest=0; //laagste bal (hoogste Y)
+        lowest=0; //laagste bal (hoogste Y)
         offsetY=00;
         for (GameObject game: gameObjectList) {
             if (game.inGrid){
                 if (game.getGridPosY()>lowest) lowest=game.getGridPosY();
-                if (lowest>11) offsetY=(float) (((lowest-11)+1)*(game.radius*2-game.radius/4)-game.radius);
+               // if (lowest>11) offsetY=(float) (((lowest-11)+1)*(game.radius*2-game.radius/4));
+                if (lowest %2==0){
+                    if (lowest>11) offsetY=(float) (((lowest-11)+1)*(game.radius*2-game.radius/4));
+                }
             }
         }
         for (GameObject game: gameObjectList) {
@@ -111,6 +141,7 @@ public class Utils {
                 game.offsetY=-offsetY;
             }
         }
+
     }
 
     public static int randInt(int min, int max) {
@@ -303,6 +334,7 @@ public class Utils {
     }
 
     public static List<GameObject> createGrid(GameSurface gameSurface){
+        createBackgroundGrid(gameSurface);
         List<GameObject> gameList=new ArrayList<>();
         score=0;
         int gridRows=rows;
@@ -330,6 +362,14 @@ public class Utils {
             }
         }
         return gameList;
+
+    }
+
+
+    public static void legalCollide(GameObject ammo, GameObject foe){
+        if (foe.getType()==1) {
+
+        }
 
     }
 

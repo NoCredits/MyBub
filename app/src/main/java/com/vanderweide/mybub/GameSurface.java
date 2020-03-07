@@ -38,51 +38,158 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+//    public void update()  {
+//
+//        GameObject foe=ammo.collide(gameList);
+//        if (foe!=null){ //collision with foe
+//                ammo.inGrid = true;
+//                int x = ammo.gridPosX;
+//                int y = ammo.gridPosY;
+//                int color = ammo.color;
+//                ammo.setVelocity(0);
+//                Utils.createArrayList(gameList);
+//                if (y % 2 == 0) { //even rij
+//                    Utils.checkNextCollide(x, y - 1, color); //rechtsboven
+//                    Utils.checkNextCollide(x + 1, y, color); //rechts
+//                    Utils.checkNextCollide(x, y + 1, color);//rechtsonder
+//                    Utils.checkNextCollide(x - 1, y + 1, color); //linksonder
+//                    Utils.checkNextCollide(x - 1, y, color); //links
+//                    Utils.checkNextCollide(x - 1, y - 1, color); //linksboven
+//                } else {
+//                    Utils.checkNextCollide(x + 1, y - 1, color); //rechtsboven
+//                    Utils.checkNextCollide(x + 1, y, color); //rechts
+//                    Utils.checkNextCollide(x + 1, y + 1, color);//rechtsonder
+//                    Utils.checkNextCollide(x, y + 1, color); //linksonder
+//                    Utils.checkNextCollide(x, y, color); //links
+//                    Utils.checkNextCollide(x, y - 1, color); //linksboven
+//                }
+//                ammo.shooter = false;
+//                ammo.collidable = true;
+//                ammo.calculateGridPosToScreen(0);
+//
+//                if (Utils.ballsFalling > 1) {
+//                    ammo.shouldDrop = true;
+//                    for (GameObject gameObject : gameList) {
+//                        if (gameObject.shouldDrop) {
+//                            gameObject.inGrid = false;
+//                            gameObject.collidable = false;
+//                            gameObject.remove = true;
+//                            gameObject.score = (Utils.ballsFalling * Utils.ballsFalling) * 10;
+//
+//                            gameObject.setMovingVectorX((int) (Utils.randInt(-500, 500)));
+//                            gameObject.setMovingVectorY((int) (1000 + Utils.offsetY));
+//                            gameObject.setVelocity(0.8f);
+//                        }
+//                    }
+//                }
+//        }
+//
+//        Utils.newDrop(gameList);
+//
+//        Iterator<GameObject> iterator= gameList.iterator();
+//
+//        while(iterator.hasNext()) {
+//            GameObject game = iterator.next();
+//            game.update();
+//            if (game.remove && game.getY()+Utils.offsetY>600){
+//                iterator.remove();
+//                Utils.score+=game.score;
+//            }
+//        }
+//
+//        if(foe!=null || ammo.shouldDrop){ //maak nieuwe ammo
+//            Hexagon hex=new Hexagon(this,Color.BLUE,true);
+//            hex.setLayer(Utils.randInt(0,4));
+//            hex.setColor(Utils.hexColor(hex.getLayer()));
+//            hex.setLayer(1);
+//            hex.shooter=true;
+//            gameList.add(hex);
+//            ammo=hex;
+//        }
+//
+//        if (gameList.size()<=1){ //alle ballen zijn op
+//            gameList=Utils.createGrid(this);
+//
+//            //create shooter
+//            Hexagon hex=new Hexagon(this,Color.BLUE,true);
+//
+//            hex.setLayer(Utils.randInt(0,4));
+//            hex.setColor(Utils.hexColor(hex.getLayer()));
+//            hex.setLayer(1);
+//
+//            gameList.add(hex);
+//            ammo=hex;
+//            ammo.shooter=true;
+//
+//        }
+//    }
+
     public void update()  {
 
         GameObject foe=ammo.collide(gameList);
         if (foe!=null){ //collision with foe
 
-            ammo.inGrid=true;
-            int x=ammo.gridPosX;
-            int y=ammo.gridPosY;
-            int color=ammo.color;
-            ammo.setVelocity(0);
-            Utils.createArrayList(gameList);
-            if (y%2==0 ) { //even rij
-                Utils.checkNextCollide(x, y - 1, color); //rechtsboven
-                Utils.checkNextCollide(x + 1, y, color); //rechts
-                Utils.checkNextCollide(x, y + 1, color);//rechtsonder
-                Utils.checkNextCollide(x - 1, y + 1, color); //linksonder
-                Utils.checkNextCollide(x - 1, y, color); //links
-                Utils.checkNextCollide(x - 1, y - 1, color); //linksboven
-            } else {
-                Utils.checkNextCollide(x+1, y - 1, color); //rechtsboven
-                Utils.checkNextCollide(x + 1, y, color); //rechts
-                Utils.checkNextCollide(x+1, y + 1, color);//rechtsonder
-                Utils.checkNextCollide(x , y + 1, color); //linksonder
-                Utils.checkNextCollide(x , y, color); //links
-                Utils.checkNextCollide(x , y - 1, color); //linksboven
-            }
-            ammo.shooter=false;
-            ammo.collidable=true;
-            ammo.calculateGridPosToScreen(0);
 
-                if (Utils.ballsFalling>1){
-                    ammo.shouldDrop=true;
-                    for (GameObject gameObject:gameList){
-                        if (gameObject.shouldDrop){
+            int x = ammo.gridPosX;
+            int y = ammo.gridPosY;
+            Log.i("y= ",String.valueOf(y));
+            int color = ammo.color;
+            ammo.setVelocity(0);
+
+            if (ammo.getType()!=0) {  //valid position
+                ammo.inGrid = true;
+
+                Utils.createArrayList(gameList);
+                if (y % 2 == 0) { //even rij
+                    Utils.checkNextCollide(x, y - 1, color); //rechtsboven
+                    Utils.checkNextCollide(x + 1, y, color); //rechts
+                    Utils.checkNextCollide(x, y + 1, color);//rechtsonder
+                    Utils.checkNextCollide(x - 1, y + 1, color); //linksonder
+                    Utils.checkNextCollide(x - 1, y, color); //links
+                    Utils.checkNextCollide(x - 1, y - 1, color); //linksboven
+                } else {
+                    Utils.checkNextCollide(x + 1, y - 1, color); //rechtsboven
+                    Utils.checkNextCollide(x + 1, y, color); //rechts
+                    Utils.checkNextCollide(x + 1, y + 1, color);//rechtsonder
+                    Utils.checkNextCollide(x, y + 1, color); //linksonder
+                    Utils.checkNextCollide(x, y, color); //links
+                    Utils.checkNextCollide(x, y - 1, color); //linksboven
+                }
+                ammo.shooter = false;
+                ammo.collidable = true;
+                ammo.calculateGridPosToScreen(0);
+
+                if (Utils.ballsFalling > 1) {
+                    ammo.shouldDrop = true;
+                    for (GameObject gameObject : gameList) {
+                        if (gameObject.shouldDrop) {
                             gameObject.inGrid = false;
                             gameObject.collidable = false;
                             gameObject.remove = true;
-                            gameObject.score=(Utils.ballsFalling*Utils.ballsFalling)*10;
+                            gameObject.score = (Utils.ballsFalling * Utils.ballsFalling) * 10;
 
-                            gameObject.setMovingVectorX((int) (Utils.randInt(-500,500)));
+                            gameObject.setMovingVectorX((int) (Utils.randInt(-500, 500)));
                             gameObject.setMovingVectorY((int) (1000 + Utils.offsetY));
                             gameObject.setVelocity(0.8f);
                         }
                     }
                 }
+
+            } else {  //not valid
+                if (ammo.color==foe.color) { //
+                    ammo.remove =true;
+                    ammo.delete=true;
+                    ammo.score=-100;
+                    ammo.collidable=false;
+                } else {
+                    ammo.remove =true;
+                    ammo.delete=true;
+                    ammo.score=-100;
+                    ammo.collidable=false;
+                    foe.color=ammo.color;
+                }
+                ammo.shouldDrop=true;
+            }
 
         }
 
@@ -93,7 +200,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
         while(iterator.hasNext()) {
             GameObject game = iterator.next();
             game.update();
-            if (game.remove && game.getY()+Utils.offsetY>600){
+            if ((game.remove && game.getY()+Utils.offsetY>600) || game.delete){
                 iterator.remove();
                 Utils.score+=game.score;
             }
@@ -177,7 +284,7 @@ public class GameSurface extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void draw(Canvas canvas)  {
         super.draw(canvas);
-
+        Utils.drawBackgroundGrid(canvas);
 
 
         Utils.setOffSetY(gameList);
